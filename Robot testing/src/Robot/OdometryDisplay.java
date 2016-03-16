@@ -4,17 +4,17 @@
 
 package Robot;
 
+import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 
 public class OdometryDisplay extends Thread {
 	private static final long DISPLAY_PERIOD = 50;
-	private Odometer odometer;
-	private TextLCD t;
+	private Odometer odometer = Main.odometer;
+	private TextLCD t = LocalEV3.get().getTextLCD();;
 	private double thetaDisplay;
 
-	public OdometryDisplay(Odometer odometer, TextLCD t) {
-		this.odometer = odometer;
-		this.t = t;
+	public OdometryDisplay() 
+	{
 	}
 
 	public void run() {

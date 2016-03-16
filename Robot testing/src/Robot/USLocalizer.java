@@ -92,8 +92,7 @@ public class USLocalizer
 		{
 			distanceToWall=getFilteredData();	//get the us data
 			if (distanceToWall>=WALL_DISTANCE)	//if detects no wall 
-			{
-				Sound.beep();					
+			{				
 				break;					//break the while loop
 			} 
 			else
@@ -115,7 +114,6 @@ public class USLocalizer
 			{
 				odo.getPosition(pos);	//get odometer data
 				angleA=pos[2];	//store the current angle as angleA
-				Sound.beep();	
 				leftMotor.stop();	//stop the motor
 				rightMotor.stop();	//stop the motor
 				break;			//exit the while loop
@@ -129,9 +127,8 @@ public class USLocalizer
 		while (true) //this loop makes the robot keeps rotating clockwise until it sees no wall
 		{
 			distanceToWall=getFilteredData();//get the us data
-			if (distanceToWall>=WALL_DISTANCE)	//if detects no wall
+			if (distanceToWall>=WALL_DISTANCE && Math.abs(odo.getTheta()-angleA) > 0.5*Math.PI)	//if detects no wall
 			{
-				Sound.beep();
 				break;
 			} else
 			{
@@ -148,7 +145,6 @@ public class USLocalizer
 			{
 				odo.getPosition(pos);	//get odometer data
 				angleB=pos[2];	//store current angle as angleB
-				Sound.beep();
 				leftMotor.stop(); //stop both motors
 				rightMotor.stop();
 				break; //break the while loop
@@ -159,7 +155,7 @@ public class USLocalizer
 			try { Thread.sleep(sleepperiod); } catch(Exception e){}		// Poor man's timed sampling
 		}
 		// keep rotating until the robot sees a wall, then latch the angle
-		odo.setPosition(new double [] {0.0, 0.0, (225 + ((angleB-angleA)/2))});
+		odo.setTheta(1.25*Math.PI + ((angleB-angleA)/2));
 		navi.turnTo(0);
 	}
 	/**

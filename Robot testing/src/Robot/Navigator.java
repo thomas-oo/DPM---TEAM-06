@@ -1,11 +1,8 @@
 package Robot;
 
 import Robot.Odometer;
-import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.Port;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
 
 
@@ -117,7 +114,7 @@ public class Navigator extends Thread
 	/**
 	 * Buffer sensorMode, stores what type of sensor is being used at a certain port.
 	 */
-	public SensorModes usSensor;
+
 	
 	//variables that are set in main, passed here
 	/**
@@ -136,11 +133,6 @@ public class Navigator extends Thread
 	 * Stores the high motor speed (in deg/s). This is set in Main. This is a final (constant) variable.
 	 */
 	private final int motorHigh;
-	
-	/**
-	 * Stores the Port object that the ultrasonic sensor will be plugged into. This is a final (constant) variable.
-	 */
-	private static final Port usPort = LocalEV3.get().getPort("S2");
 	/**
 	 * This constructor takes NO inputs. The constructor will its class variables to the ones set in Main. We do not except these variables to change.
 	 */
@@ -176,15 +168,14 @@ public class Navigator extends Thread
 		this.odometer = Main.odometer;
 		this.leftMotor = Main.leftMotor;
 		this.rightMotor = Main.rightMotor;
-		this.headMotor = Main.headMotor;
+		//this.headMotor = Main.headMotor;
 		
 		this.bandCenter = Main.bandCenter;
 		this.bandWidth = Main.bandWidth;
 		this.motorLow = Main.motorLow; 
 		this.motorHigh = Main.motorHigh;
 		
-		this.usSensor = new EV3UltrasonicSensor(usPort);
-		this.usSampleProvider = usSensor.getMode("Distance");
+		this.usSampleProvider = Main.usValue;
 		this.usData = new float[usSampleProvider.sampleSize()];
 	}
 
@@ -441,7 +432,8 @@ public class Navigator extends Thread
 	public void turnTo(double destTheta) //uses destTheta and nowTheta to calculate AND TURN required minimal angle.
 	{
 		setSpeeds(forwardSpeed, forwardSpeed); //set speeds as we will be moving.
-
+		//nowTheta is recalc'd here.
+		nowTheta = odometer.getTheta();
 		double turnTheta = destTheta - nowTheta; //dest and nowTheta both are from [0,2pi]
 		//CALCULATES MINIMAL TURN and EXECUTES
 		//ROTATES UNTIL TURN IS COMPLETE.

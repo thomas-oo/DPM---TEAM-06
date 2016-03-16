@@ -83,7 +83,7 @@ public class LightLocalizer {
 	public LightLocalizer() 
 	{
 		this.odo = Main.odometer;
-		this.colorSensor = Main.usValue;
+		this.colorSensor = Main.colorValue;
 		this.colorData = Main.colorData;
 	}
 	/**
@@ -93,29 +93,41 @@ public class LightLocalizer {
 	public void doLocalization() 
 	{
 		Navigator navi=new Navigator();//thus i can use method in navigation.java class
+		navi.start();
 		moveToLocalizingSpot(navi);
 		
 		double angle[]=new double[4];	//declare an array to store the angles 
 		numberOfLines=0;	//counter
+		int LSvalue = 0;
+		int bufferCount = 0;
+		boolean blackLineDetected = false;
 		while (numberOfLines<=3) //this loop detects 4 gridlines 
 		{	
-			int LSvalue = getFilteredData();
-			odo.getPosition(pos);	//get current position from odometer
-			if (LSvalue<=50)	//the floor is something above 70, when it first sees a black line, is 60~50, so i set 50 to make the robot stops quicker. Note that when the ls is exactly above the black line, the lsvalue is less then 15
+			LSvalue = getFilteredData();
+			
+			if(LSvalue < 50 && bufferCount < 5)
 			{
-				Sound.twoBeeps(); 
-				angle[numberOfLines]=toDegrees(pos[2]);	//store current angle
-				numberOfLines++;	//counter increments
-				if (numberOfLines==4)	//if count to 4,then all 4 gridlines are detected, break the loop
-				{
-					leftMotor.stop();
-					rightMotor.stop();
-					Sound.beep();
-					break; 
-				}
+				bufferCount++;
+				blackLineDetected = false;
 			}
-			rotateCounterClockwise(); //rotate the robot counter-clockwise
-			try { Thread.sleep(sleepperiod); } catch(Exception e){}	
+			else if(LSvalue < 50)
+			{
+				Sound.beep();
+				angle[numberOfLines] = toDegrees(odo.getTheta());
+				blackLineDetected = true;
+			}
+			if(LSvalue >= 50)
+			{
+				if(blackLineDetected)
+				{
+					  angle[numberOfLines] = (angle[numberOfLines] + toDegrees(odo.getTheta()))/2;
+					  numberOfLines++;
+				}
+				bufferCount = 0;
+				blackLineDetected = false;
+			}
+			rotateCounterClockwise();
+			try{Thread.sleep(sleepperiod);}catch(Exception e){}
 		}
 		// start rotating and clock all 4 gridlines
 		
@@ -136,14 +148,15 @@ public class LightLocalizer {
 		{	
 			theta=360+theta;
 		}
-		odo.setPosition(new double [] {x, y, theta});	
-		Sound.buzz();
+		odo.setX(x);
+		odo.setY(y);
 		
 		navi.travelTo(0,0);
-		navi.turnTo(0);
+		//navi.turnTo(0);
 		leftMotor.stop();
 		rightMotor.stop();
-		odo.setPosition(new double [] {0, 0, 0});
+		odo.setX(0);
+		odo.setY(0);
 		// when done travel to (0,0) and turn to 0 degrees
 	}
 	/**Gets the most recent color sensor value. Scales it by 100 and returns that value
