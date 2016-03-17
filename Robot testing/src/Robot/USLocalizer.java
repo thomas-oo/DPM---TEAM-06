@@ -103,7 +103,7 @@ public class USLocalizer
 		}
 		// rotate the robot until it sees no wall
 
-		turn(70);
+		turn(10);
 		//sometimes the robot imediately detects the wall,so i turn the robot counter-clockwise an amount 
 		//of degrees so it will face to no wall and then start the below method, which will detects wall 
 
@@ -155,7 +155,14 @@ public class USLocalizer
 			try { Thread.sleep(sleepperiod); } catch(Exception e){}		// Poor man's timed sampling
 		}
 		// keep rotating until the robot sees a wall, then latch the angle
-		odo.setTheta(1.25*Math.PI + ((angleB-angleA)/2));
+		if(angleB>angleA)
+		{
+			odo.setTheta(1.25*Math.PI + ((angleB-angleA)/2));
+		}
+		else
+		{
+			odo.setTheta(0.75*Math.PI + ((angleA - angleB)/2));
+		}
 		navi.turnTo(0);
 	}
 	/**

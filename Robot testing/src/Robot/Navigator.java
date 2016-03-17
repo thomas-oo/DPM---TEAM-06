@@ -111,10 +111,6 @@ public class Navigator extends Thread
 	 * Buffer sampleProvider that can fetch samples from the ultrasonic sensor. 
 	 */
 	public SampleProvider usSampleProvider;
-	/**
-	 * Buffer sensorMode, stores what type of sensor is being used at a certain port.
-	 */
-
 	
 	//variables that are set in main, passed here
 	/**
