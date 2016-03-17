@@ -33,6 +33,7 @@ public class Main
 	public static int bandWidth = 2;
 	public static int motorLow = 100;
 	public static int motorHigh = 200;
+	public static int startingCorner = 1;
 	
 	//classes main will rely on
 	public static Navigator nav;
