@@ -71,6 +71,10 @@ public class USLocalizer
 	 * The angle at which we find the second wall (in radians).
 	 */
 	private double angleB;
+	/**
+	 * The starting corner at which the robot is placed
+	 */
+	private int startingCorner;
 
 	/**
 	 * Constructor for USLocalizer class. Takes no inputs but inherits many variables from Main.
@@ -80,6 +84,7 @@ public class USLocalizer
 		this.odo = Main.odometer;
 		this.usSensor = Main.usValue;
 		this.usData = Main.usData;
+		this.startingCorner = Main.startingCorner;
 	}
 
 	/**
@@ -164,6 +169,7 @@ public class USLocalizer
 			odo.setTheta(0.75*Math.PI + ((angleA - angleB)/2));
 		}
 		navi.turnTo(0);
+		correctHeading();
 	}
 	/**
 	 * Rotates the robot clockwise. The rotation speed of the wheels are ROTATION_SPEED (in deg/s).
@@ -225,6 +231,18 @@ public class USLocalizer
 			distance = WALL_DISTANCE;	
 		}
 		return distance;
+	}
+	/** Corrects the heading depending on the corner that is starts at
+	 */
+	private void correctHeading() 
+	{
+		switch (this.startingCorner)
+		{
+		case 1: odo.setTheta(0);
+		case 2: odo.setTheta(Math.PI/2.0);
+		case 3: odo.setTheta(Math.PI);
+		case 4: odo.setTheta(3.0 * Math.PI/2.0);
+		}
 	}
 
 

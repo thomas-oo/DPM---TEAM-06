@@ -76,6 +76,10 @@ public class LightLocalizer {
 	 */
 	private static final int sleepperiod=0;	//i first have this value like 10 or something
 	//later by testing i found its better leave it 0 thus no sleeping time 
+	/** 
+	 * The starting corner at which the robot is placed
+	 */
+	private int startingCorner;
 	
 	/**
 	 * Constructor for LightLocalizer class. Takes no inputs but inherits many variables from Main.
@@ -85,6 +89,7 @@ public class LightLocalizer {
 		this.odo = Main.odometer;
 		this.colorSensor = Main.colorValue;
 		this.colorData = Main.colorData;
+		this.startingCorner = Main.startingCorner;
 	}
 	/**
 	 * The method does light localization. The angles (as reported by the odometer) at which we detect the black lines are used to figure out an absolute heading. 0 is in the positive x axis.
@@ -155,9 +160,14 @@ public class LightLocalizer {
 		//navi.turnTo(0);
 		leftMotor.stop();
 		rightMotor.stop();
-		odo.setX(0);
-		odo.setY(0);
-		// when done travel to (0,0) and turn to 0 degrees
+		
+		switch (startingCorner) {
+		case 1: odo.setX(0); odo.setY(0); break;
+		case 2: odo.setX(300); odo.setY(0); break;
+		case 3: odo.setX(300); odo.setY(300); break;
+		case 4: odo.setX(0); odo.setY(300); break;
+		}
+		// when done travel to the nearest intersection
 	}
 	/**Gets the most recent color sensor value. Scales it by 100 and returns that value
 	 * @return Color sensor value from 0-100. Higher values mean more light (lighter).
@@ -173,8 +183,15 @@ public class LightLocalizer {
 	 */
 	private void moveToLocalizingSpot(Navigator navi) 
 	{
-		navi.turnTo(0.25 * Math.PI);	//turn to 45 degree
-		odo.setTheta(0.25*Math.PI);
+		double heading = 0;
+		switch (this.startingCorner) {
+		case 1: heading = 45; break;
+		case 2: heading = 135; break;
+		case 3: heading = 225; break;
+		case 4: heading = 315; break;
+		}
+		navi.turnTo(heading * Math.PI/180.0);	//turn to heading
+		odo.setTheta(heading * Math.PI/180.0);
 		//set current position as 0,0 and 315degree
 		leftMotor.setSpeed((int)forwardspeed);
 		rightMotor.setSpeed((int)forwardspeed);
