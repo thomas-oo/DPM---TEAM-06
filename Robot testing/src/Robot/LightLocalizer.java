@@ -118,14 +118,14 @@ public class LightLocalizer {
 			else if(LSvalue < 50)
 			{
 				Sound.beep();
-				angle[numberOfLines] = toDegrees(odo.getTheta());
+				angle[numberOfLines] = odo.getTheta();
 				blackLineDetected = true;
 			}
 			if(LSvalue >= 50)
 			{
 				if(blackLineDetected)
 				{
-					  angle[numberOfLines] = (angle[numberOfLines] + toDegrees(odo.getTheta()))/2;
+					  angle[numberOfLines] = (angle[numberOfLines] + odo.getTheta())/2;
 					  numberOfLines++;
 				}
 				bufferCount = 0;
@@ -136,31 +136,42 @@ public class LightLocalizer {
 		}
 		// start rotating and clock all 4 gridlines
 		
-		
-		double temp=0;
-		temp=360-angle[1]+angle[3];
-		y=-LS_DIST*Math.cos(Math.PI*temp/360);
-		temp=Math.abs(angle[0]-angle[2]);
-		x=-LS_DIST*Math.cos(Math.PI*temp/360);
-		theta=temp/2+90;
-		odo.getPosition(pos);
-		theta=theta+pos[2];
-		if (theta>=360)
-		{
-			theta=theta % 360;
-		}
-		if (theta<0)
-		{	
-			theta=360+theta;
-		}
-		odo.setX(x);
-		odo.setY(y);
-		
-		navi.travelTo(0,0);
-		//navi.turnTo(0);
 		leftMotor.stop();
 		rightMotor.stop();
 		
+		double temp=0;
+		
+		temp=(angle[1]-angle[3])/2;
+		y=-LS_DIST*Math.cos(temp);
+		
+		temp=(angle[0]-angle[2])/2;
+		x=-LS_DIST*Math.cos(temp);
+		
+		theta = angle[2] + (angle[0]-angle[2])/2 - Math.PI;
+		System.out.println("Adustment theta: " + theta);
+		theta = angle[3] + theta;
+		odo.setX(x);
+		odo.setY(y);
+		odo.setTheta(theta);
+		for(int i = 0 ; i < angle.length; i++)
+		{
+			System.out.println("Angle " + i + " : " + angle[i]);
+		}
+		System.out.println("Set x to: " + x);
+		System.out.println("Set y to: " + y);
+		System.out.println("Set theta to: " + theta);
+		
+		navi.turnTo(0);
+		
+		navi.travelTo(0,0);
+		while(navi.isNavigating())
+		{
+			try {Thread.sleep(500);} 
+			catch (InterruptedException e) {e.printStackTrace();}
+		}
+		navi.turnTo(0);
+		leftMotor.stop();
+		rightMotor.stop();
 		switch (startingCorner) {
 		case 1: odo.setX(0); odo.setY(0); break;
 		case 2: odo.setX(300); odo.setY(0); break;

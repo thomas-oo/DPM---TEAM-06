@@ -102,7 +102,8 @@ public class USLocalizer
 			} 
 			else
 			{
-				rotateCounterClockwise();		
+				rotateCounterClockwise();
+				odo.setTheta(0);
 			}
 			try { Thread.sleep(sleepperiod); } catch(Exception e){}		// run and sleep for a while
 		}
@@ -119,6 +120,7 @@ public class USLocalizer
 			{
 				odo.getPosition(pos);	//get odometer data
 				angleA=pos[2];	//store the current angle as angleA
+				System.out.println("angleA: " + angleA*57.2958);
 				leftMotor.stop();	//stop the motor
 				rightMotor.stop();	//stop the motor
 				break;			//exit the while loop
@@ -150,6 +152,7 @@ public class USLocalizer
 			{
 				odo.getPosition(pos);	//get odometer data
 				angleB=pos[2];	//store current angle as angleB
+				System.out.println("angleB: " + angleB*57.2958);
 				leftMotor.stop(); //stop both motors
 				rightMotor.stop();
 				break; //break the while loop
@@ -160,14 +163,13 @@ public class USLocalizer
 			try { Thread.sleep(sleepperiod); } catch(Exception e){}		// Poor man's timed sampling
 		}
 		// keep rotating until the robot sees a wall, then latch the angle
-		if(angleB>angleA)
+		if(angleB < angleA)
 		{
-			odo.setTheta(1.25*Math.PI + ((angleB-angleA)/2));
+			angleA = angleA - angleB;
+			angleB = 2*Math.PI;
 		}
-		else
-		{
-			odo.setTheta(0.75*Math.PI + ((angleA - angleB)/2));
-		}
+		odo.setTheta(1.25*Math.PI + ((angleB-angleA)/2));
+		System.out.println("Set theta to: " + (1.25*Math.PI + ((angleB-angleA)/2))*57.2958);
 		navi.turnTo(0);
 		correctHeading();
 	}
