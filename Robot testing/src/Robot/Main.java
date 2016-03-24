@@ -23,7 +23,8 @@ public class Main
 	//public static final EV3LargeRegulatedMotor headMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
 	
 	public static final Port usPort = LocalEV3.get().getPort("S1");
-	public static final Port colorPort = LocalEV3.get().getPort("S2");	
+	public static final Port leftColorPort = LocalEV3.get().getPort("S2");
+	public static final Port rightColorPort = LocalEV3.get().getPort("S3");
 	
 	//specifications about robot, global and should be accessible.
 	public static double WHEEL_RADIUS = 2.15; //measure
@@ -33,7 +34,7 @@ public class Main
 	public static int bandWidth = 2;
 	public static int motorLow = 100;
 	public static int motorHigh = 200;
-	public static int startingCorner = 4;
+	public static int startingCorner = 1;
 	
 	//classes main will rely on
 	public static Navigator nav;
@@ -45,10 +46,13 @@ public class Main
 	public static SampleProvider usValue = usSensor.getMode("Distance");
 	public static float[] usData = new float[usValue.sampleSize()];
 	
-	public static SensorModes colorSensor = new EV3ColorSensor(colorPort);
-	public static SampleProvider colorValue = colorSensor.getMode("Red");
-	public static float[] colorData = new float[colorValue.sampleSize()];		
+	public static SensorModes leftColorSensor = new EV3ColorSensor(leftColorPort);
+	public static SampleProvider leftColorValue = leftColorSensor.getMode("Red");
+	public static float[] leftColorData = new float[leftColorValue.sampleSize()];		
 	
+	public static SensorModes rightColorSensor = new EV3ColorSensor(rightColorPort);
+	public static SampleProvider rightColorValue = rightColorSensor.getMode("Red");
+	public static float[] rightColorData = new float[rightColorValue.sampleSize()];
 	
 	public static void main(String[] args) 
 	{
@@ -73,8 +77,8 @@ public class Main
 		USLocalizer usL = new USLocalizer();
 		usL.doLocalization();
 		Button.waitForAnyPress();
-		LightLocalizer lightL = new LightLocalizer();
-		lightL.doLocalization();
+		LineSquarer lineSquarer = new LineSquarer();
+		lineSquarer.squareWithLines();
 		Button.waitForAnyPress();
 		
 	}

@@ -86,10 +86,10 @@ public class LightLocalizer {
 	 */
 	public LightLocalizer() 
 	{
-		this.odo = Main.odometer;
+		/*this.odo = Main.odometer;
 		this.colorSensor = Main.colorValue;
 		this.colorData = Main.colorData;
-		this.startingCorner = Main.startingCorner;
+		this.startingCorner = Main.startingCorner;*/
 	}
 	/**
 	 * The method does light localization. The angles (as reported by the odometer) at which we detect the black lines are used to figure out an absolute heading. 0 is in the positive x axis.
