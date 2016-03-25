@@ -27,8 +27,8 @@ public class Main
 	public static final Port rightColorPort = LocalEV3.get().getPort("S3");
 	
 	//specifications about robot, global and should be accessible.
-	public static double WHEEL_RADIUS = 2.15; //measure
-	public static double TRACK = 15;
+	public static double WHEEL_RADIUS = 2.09; //measure
+	public static double TRACK = 14.46;
 	public static double LS_DIST = 12.5;
 	public static int bandCenter = 20;
 	public static int bandWidth = 2;
@@ -65,7 +65,7 @@ public class Main
 		
 		//parseParameters();
 		readyPosition();
-		startPlaying();
+		//startPlaying();
 	}
 	
 	private static void parseParameters() //start wificonnection class, establish connection and set variables
@@ -77,9 +77,9 @@ public class Main
 		USLocalizer usL = new USLocalizer();
 		usL.doLocalization();
 		Button.waitForAnyPress();
-		LineSquarer lineSquarer = new LineSquarer();
-		lineSquarer.squareWithLines();
-		Button.waitForAnyPress();
+		//LineSquarer lineSquarer = new LineSquarer();
+		//lineSquarer.squareWithLines();
+		//Button.waitForAnyPress();
 		//once you get here, the robot will be at what it thinks is 0,0 and heading in 0. If the starting corner was 1, this would be fine.
 		
 		switch(startingCorner)
