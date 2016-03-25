@@ -27,7 +27,7 @@ public class LineSquarer
 	
 	private static final int LSDist = 5;
 	private int low = 20;
-	private int high = 50;
+	private int high = 60;
 	
 	public LineSquarer()
 	{
@@ -45,13 +45,23 @@ public class LineSquarer
 		
 		driveToHorizontalLine();
 		
-		navi.travelTo(0,0);
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		navi.travelTo(-LSDist,0);
 		while(navi.isNavigating())
 		{
 			try {Thread.sleep(500);} 
 			catch (InterruptedException e) {e.printStackTrace();}
 		}
 		navi.turnTo(0);
+		findMiddleOfLine();
+		odo.setTheta(0);
+		navi.travelTo(0, 0);
+		
 	}
 
 	private void driveToVerticalLine() 
@@ -65,43 +75,83 @@ public class LineSquarer
 		leftReading = getLeftColorData();
 		rightReading = getRightColorData();
 		
+		int bufferLeft = 0;
+		int bufferRight = 0;
+		boolean lineLeft = false;
+		boolean lineRight = false;
+		
 		//both color must find the black line
-		while(!(leftReading < 50 && rightReading < 50))
+		while(!(lineLeft && lineRight))
 		{
-			if(leftReading < 50)
+			leftReading = getLeftColorData();
+			rightReading = getRightColorData();
+			
+			if(leftReading < 30 && bufferLeft < 3)
 			{
+				bufferLeft++;
+			}
+			else if(leftReading < 30)
+			{
+				lineLeft = true;
+				if(rightReading < 30)
+				{
+					lineRight = true;
+				}
 				System.out.println("Found vertical line on left.");
+			}
+			else
+			{
+				bufferLeft = 0;
+			}
+			
+			if(rightReading < 30 && bufferRight < 3)
+			{
+				bufferRight++;
+			}
+			else if(rightReading < 30)
+			{
+				lineRight = true;
+				if(leftReading < 30)
+				{
+					lineLeft = true;
+				}
+				System.out.println("Found vertical line on right.");
+			}
+			else
+			{
+				bufferRight = 0;
+			}
+			
+			if(lineLeft && !lineRight)
+			{
 				leftMotor.stop();
 				
 				rightMotor.setSpeed(low);
 				rightMotor.forward();
 			}
-			else if(rightReading < 50)
+			else if(lineRight && !lineLeft)
 			{
-				System.out.println("Found vertical line on right.");
 				rightMotor.stop();
 				
 				leftMotor.setSpeed(low);
 				leftMotor.forward();
 			}
-			else
+			else if(lineRight&&lineLeft)
 			{
-				System.out.println("No vertical line found.");
-				leftMotor.setSpeed(high);
-				rightMotor.setSpeed(high);
-				leftMotor.forward();
-				rightMotor.forward();
+				rightMotor.stop();
+				leftMotor.stop();
 			}
-			leftReading = getLeftColorData();
-			rightReading = getRightColorData();
+			
+			try {Thread.sleep(10);} 
+			catch (InterruptedException e) {e.printStackTrace();}
 		}
 		System.out.println("Found vertical line on both.");
 		
-		findMiddleOfLine();
-		System.out.println("Found middle of line. ");
+		//findMiddleOfLine();
+		//System.out.println("Found middle of line. ");
 		//this is assuming lower left field
 		odo.setTheta(0);
-		odo.setX(0-LSDist);
+		odo.setX(-LSDist);
 	}
 	
 	private void driveToHorizontalLine() 
@@ -115,42 +165,58 @@ public class LineSquarer
 		leftReading = getLeftColorData();
 		rightReading = getRightColorData();
 		
+		int bufferLeft = 0;
+		int bufferRight = 0;
+		boolean lineLeft = false;
+		boolean lineRight = false;
+		
 		//both color must find the black line
-		while(!(leftReading < 50 && rightReading < 50))
+		while(!(lineLeft || lineRight))
 		{
-			if(leftReading < 50)
+			leftReading = getLeftColorData();
+			rightReading = getRightColorData();
+			
+			if(leftReading < 30 && bufferLeft < 1)
 			{
-				System.out.println("Found horizontal line on left.");
-				leftMotor.stop();
-				
-				rightMotor.setSpeed(low);
-				rightMotor.forward();
+				bufferLeft++;
 			}
-			else if(rightReading < 50)
+			else if(leftReading < 30)
 			{
-				System.out.println("Found horizontal line on right.");
+				leftMotor.stop();
 				rightMotor.stop();
-				
-				leftMotor.setSpeed(low);
-				leftMotor.forward();
+				lineLeft = true;
+				System.out.println("Found vertical line on left.");
 			}
 			else
 			{
-				System.out.println("No horizontal line found.");
-				leftMotor.setSpeed(high);
-				rightMotor.setSpeed(high);
-				leftMotor.forward();
-				rightMotor.forward();
+				bufferLeft = 0;
 			}
-			leftReading = getLeftColorData();
-			rightReading = getRightColorData();
+			
+			if(rightReading < 30 && bufferRight < 1)
+			{
+				bufferRight++;
+			}
+			else if(rightReading < 30)
+			{
+				leftMotor.stop();
+				rightMotor.stop();
+				lineRight = true;
+				System.out.println("Found vertical line on right.");
+			}
+			else
+			{
+				bufferRight = 0;
+			}
+			
+			try {Thread.sleep(10);} 
+			catch (InterruptedException e) {e.printStackTrace();}
 		}
 		System.out.println("Found horizontal line on both.");
-		findMiddleOfLine();
-		System.out.println("Found middle of line.");
+		//findMiddleOfLine();
+		//System.out.println("Found middle of line.");
 		//this is assuming lower left field
 		odo.setTheta(0.5*Math.PI);
-		odo.setY(0-LSDist);
+		odo.setY(-LSDist);
 	}
 
 	private int getLeftColorData() 
@@ -174,9 +240,11 @@ public class LineSquarer
 		
 		int leftTacho = leftMotor.getTachoCount();
 		int leftReading = getLeftColorData();
-		while(leftReading < 50)
+		while(leftReading < 30)
 		{
 			leftMotor.forward();
+			try {Thread.sleep(100);} 
+			catch (InterruptedException e) {e.printStackTrace();}
 			leftReading = getLeftColorData();
 		}
 		leftMotor.stop();
@@ -185,13 +253,17 @@ public class LineSquarer
 		
 		int rightTacho = rightMotor.getTachoCount();
 		int rightReading = getRightColorData();
-		while(rightReading < 50)
+		while(rightReading < 30)
 		{
 			rightMotor.forward();
+			try {Thread.sleep(100);} 
+			catch (InterruptedException e) {e.printStackTrace();}
 			rightReading = getRightColorData();
 		}
 		rightMotor.stop();
 		rightTacho = rightMotor.getTachoCount() - rightTacho;
 		rightMotor.rotate(-rightTacho/2);
 	}
+	
+	
 }

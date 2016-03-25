@@ -80,7 +80,35 @@ public class Main
 		LineSquarer lineSquarer = new LineSquarer();
 		lineSquarer.squareWithLines();
 		Button.waitForAnyPress();
+		//once you get here, the robot will be at what it thinks is 0,0 and heading in 0. If the starting corner was 1, this would be fine.
 		
+		switch(startingCorner)
+		{
+		case 1: 
+			odometer.setX(0);
+			odometer.setY(0);
+			odometer.setTheta(0);
+			System.out.println("Case 1");
+			break;
+		case 2:
+			odometer.setX(300);
+			odometer.setY(0);
+			odometer.setTheta(0.5*Math.PI);
+			System.out.println("Case 2");
+			break;
+		case 3:
+			odometer.setX(300);
+			odometer.setY(300);
+			odometer.setTheta(Math.PI);
+			System.out.println("Case 3");
+			break;
+		case 4:
+			odometer.setX(0);
+			odometer.setY(300);
+			odometer.setTheta(1.5*Math.PI);
+			System.out.println("Case 4");
+			break;
+		}
 	}
 	private static void startPlaying() //take role, make either attacker/defender class, transfer control to that class
 	{

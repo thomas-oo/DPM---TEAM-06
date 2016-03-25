@@ -17,7 +17,7 @@ public class USLocalizer
 	/**
 	 * The rotation speed of the motors (in deg/s) for localization.
 	 */
-	public static double ROTATION_SPEED = 60;
+	public static double ROTATION_SPEED = 110;
 	/**
 	 * The Odometer object that we use to access x, y, and theta values.
 	 */
@@ -171,7 +171,7 @@ public class USLocalizer
 		odo.setTheta(1.25*Math.PI + ((angleB-angleA)/2));
 		System.out.println("Set theta to: " + (1.25*Math.PI + ((angleB-angleA)/2))*57.2958);
 		navi.turnTo(0);
-		correctHeading();
+		//correctHeading();
 	}
 	/**
 	 * Rotates the robot clockwise. The rotation speed of the wheels are ROTATION_SPEED (in deg/s).
