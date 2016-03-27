@@ -220,8 +220,8 @@ public class Navigator extends Thread
 				isCorrecting = false;
 				if (!facingDest(destTheta))
 				{
-					leftMotor.stop();
-					rightMotor.stop();
+					leftMotor.stop(true);
+					rightMotor.stop(false);
 					turnTo(destTheta);
 				}
 				else if(facingDest(destTheta))
@@ -246,8 +246,8 @@ public class Navigator extends Thread
 				}
 			    else if(checkIfDone(nowDistance))
 				{
-					leftMotor.stop();
-					rightMotor.stop();
+					leftMotor.stop(true);
+					rightMotor.stop(false);
 					isNavigating = false;
 					state = State.INIT;
 				}

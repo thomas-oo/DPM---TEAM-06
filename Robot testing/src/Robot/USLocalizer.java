@@ -121,8 +121,8 @@ public class USLocalizer
 				odo.getPosition(pos);	//get odometer data
 				angleA=pos[2];	//store the current angle as angleA
 				System.out.println("angleA: " + angleA*57.2958);
-				leftMotor.stop();	//stop the motor
-				rightMotor.stop();	//stop the motor
+				leftMotor.stop(true);	//stop the motor
+				rightMotor.stop(false);	//stop the motor
 				break;			//exit the while loop
 			} else
 			{
@@ -153,8 +153,8 @@ public class USLocalizer
 				odo.getPosition(pos);	//get odometer data
 				angleB=pos[2];	//store current angle as angleB
 				System.out.println("angleB: " + angleB*57.2958);
-				leftMotor.stop(); //stop both motors
-				rightMotor.stop();
+				leftMotor.stop(true); //stop both motors
+				rightMotor.stop(false);
 				break; //break the while loop
 			} else
 			{

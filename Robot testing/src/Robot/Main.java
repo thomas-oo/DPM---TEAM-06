@@ -65,7 +65,7 @@ public class Main
 		
 		//parseParameters();
 		readyPosition();
-		//startPlaying();
+		startPlaying();
 	}
 	
 	private static void parseParameters() //start wificonnection class, establish connection and set variables
@@ -77,9 +77,9 @@ public class Main
 		USLocalizer usL = new USLocalizer();
 		usL.doLocalization();
 		Button.waitForAnyPress();
-		//LineSquarer lineSquarer = new LineSquarer();
-		//lineSquarer.squareWithLines();
-		//Button.waitForAnyPress();
+		LineSquarer lineSquarer = new LineSquarer();
+		lineSquarer.squareWithLines();
+		Button.waitForAnyPress();
 		//once you get here, the robot will be at what it thinks is 0,0 and heading in 0. If the starting corner was 1, this would be fine.
 		
 		switch(startingCorner)

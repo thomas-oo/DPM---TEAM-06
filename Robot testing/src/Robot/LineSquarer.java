@@ -27,7 +27,7 @@ public class LineSquarer
 	
 	private static final int LSDist = 5;
 	private int low = 20;
-	private int high = 60;
+	private int high = 100;
 	
 	public LineSquarer()
 	{
@@ -86,7 +86,7 @@ public class LineSquarer
 			leftReading = getLeftColorData();
 			rightReading = getRightColorData();
 			
-			if(leftReading < 30 && bufferLeft < 3)
+			if(leftReading < 30 && bufferLeft < 1)
 			{
 				bufferLeft++;
 			}
@@ -104,7 +104,7 @@ public class LineSquarer
 				bufferLeft = 0;
 			}
 			
-			if(rightReading < 30 && bufferRight < 3)
+			if(rightReading < 30 && bufferRight < 1)
 			{
 				bufferRight++;
 			}
@@ -124,22 +124,22 @@ public class LineSquarer
 			
 			if(lineLeft && !lineRight)
 			{
-				leftMotor.stop();
+				leftMotor.stop(true);
 				
 				rightMotor.setSpeed(low);
 				rightMotor.forward();
 			}
 			else if(lineRight && !lineLeft)
 			{
-				rightMotor.stop();
+				rightMotor.stop(true);
 				
 				leftMotor.setSpeed(low);
 				leftMotor.forward();
 			}
 			else if(lineRight&&lineLeft)
 			{
-				rightMotor.stop();
-				leftMotor.stop();
+				rightMotor.stop(true);
+				leftMotor.stop(false);
 			}
 			
 			try {Thread.sleep(10);} 
@@ -182,10 +182,10 @@ public class LineSquarer
 			}
 			else if(leftReading < 30)
 			{
-				leftMotor.stop();
-				rightMotor.stop();
+				leftMotor.stop(true);
+				rightMotor.stop(false);
 				lineLeft = true;
-				System.out.println("Found vertical line on left.");
+				System.out.println("Found horizontal line on left.");
 			}
 			else
 			{
@@ -198,10 +198,10 @@ public class LineSquarer
 			}
 			else if(rightReading < 30)
 			{
-				leftMotor.stop();
-				rightMotor.stop();
+				leftMotor.stop(true);
+				rightMotor.stop(false);
 				lineRight = true;
-				System.out.println("Found vertical line on right.");
+				System.out.println("Found horizontal line on right.");
 			}
 			else
 			{

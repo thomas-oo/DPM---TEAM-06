@@ -136,8 +136,8 @@ public class LightLocalizer {
 		}
 		// start rotating and clock all 4 gridlines
 		
-		leftMotor.stop();
-		rightMotor.stop();
+		leftMotor.stop(true);
+		rightMotor.stop(false);
 		
 		double temp=0;
 		
@@ -170,8 +170,8 @@ public class LightLocalizer {
 			catch (InterruptedException e) {e.printStackTrace();}
 		}
 		navi.turnTo(0);
-		leftMotor.stop();
-		rightMotor.stop();
+		leftMotor.stop(true);
+		rightMotor.stop(false);
 		switch (startingCorner) {
 		case 1: odo.setX(0); odo.setY(0); break;
 		case 2: odo.setX(300); odo.setY(0); break;
@@ -210,8 +210,8 @@ public class LightLocalizer {
 		leftMotor.rotate(convertDistance(WHEEL_RADIUS,11),true);
 		rightMotor.rotate(convertDistance(WHEEL_RADIUS,11),false);
 		//by trial, this distance is enough for the robot to do ls localization
-		leftMotor.stop();
-		rightMotor.stop();
+		leftMotor.stop(true);
+		rightMotor.stop(false);
 	}
 
 	/** Takes an angle (in radians) and returns the same angle but in degrees.
