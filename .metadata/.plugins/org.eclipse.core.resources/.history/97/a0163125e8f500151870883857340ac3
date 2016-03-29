@@ -145,7 +145,6 @@ public class Main
 		// grab the ball
 		ballGrabber.grabBall();
 		
-		// thorw ball
-		ballGrabber.throwBall();
+		
 	}
 }

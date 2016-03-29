@@ -143,9 +143,6 @@ public class Main
 		nav.turnTo(Math.PI);
 		
 		// grab the ball
-		ballGrabber.grabBall();
-		
-		// thorw ball
-		ballGrabber.throwBall();
+		ballGrabber.run();
 	}
 }

@@ -69,7 +69,7 @@ public class Main
 		odometryDisplay.start();
 		nav = new Navigator();
 		nav.start();
-		ballGrabber = new MileStoneBallGrab();
+		ballGrabber = new BallGrab();
 		
 		//parseParameters();
 		readyPosition();
@@ -143,9 +143,6 @@ public class Main
 		nav.turnTo(Math.PI);
 		
 		// grab the ball
-		ballGrabber.grabBall();
-		
-		// thorw ball
-		ballGrabber.throwBall();
+		ballGrabber.run();
 	}
 }

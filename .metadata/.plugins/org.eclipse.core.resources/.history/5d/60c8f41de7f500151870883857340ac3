@@ -38,7 +38,7 @@ public class Main
 	public static Navigator nav;
 	public static Odometer odometer;
 	public static OdometryDisplay odometryDisplay;
-	public static MileStoneBallGrab ballGrabber;
+	public static BallGrab ballGrabber;
 	
 	public static SensorModes usSensor = new EV3UltrasonicSensor(usPort);
 	public static SampleProvider usValue = usSensor.getMode("Distance");
@@ -69,7 +69,7 @@ public class Main
 		odometryDisplay.start();
 		nav = new Navigator();
 		nav.start();
-		ballGrabber = new MileStoneBallGrab();
+		ballGrabber = new BallGrab();
 		
 		//parseParameters();
 		readyPosition();
@@ -135,17 +135,14 @@ public class Main
 	{	
 		// travel to the region near the ball platform
 		// where we can position the sensors to correctly identify the balls
-		int destX = urX - 45;
-		int destY = urY - 15;
+		int destX = urX - 30;
+		int destY = urY - 30;
 		nav.travelTo(destX, destY);
 		
 		// make it turn south
-		nav.turnTo(Math.PI);
+		nav.turnTo(-Math.PI);
 		
 		// grab the ball
-		ballGrabber.grabBall();
-		
-		// thorw ball
-		ballGrabber.throwBall();
+		ballGrabber.run();
 	}
 }
