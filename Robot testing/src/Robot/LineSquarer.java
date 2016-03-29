@@ -25,7 +25,7 @@ public class LineSquarer
 	 */
 	private static final EV3LargeRegulatedMotor rightMotor = Main.rightMotor;
 	
-	private static final int LSDist = 5;
+	private static final double LSDist = Main.LS_DIST;
 	private int low = 20;
 	private int high = 100;
 	
@@ -36,12 +36,11 @@ public class LineSquarer
 	
 	public void squareWithLines()
 	{
-		Navigator navi=new Navigator();//thus i can use method in navigation.java class
-		navi.start();
+		Navigator nav = Main.nav;//thus i can use method in navigation.java class
 		
 		driveToVerticalLine();
 		
-		navi.turnTo(0.5*Math.PI);
+		nav.turnTo(0.5*Math.PI);
 		
 		driveToHorizontalLine();
 		
@@ -51,17 +50,20 @@ public class LineSquarer
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		navi.travelTo(-LSDist,0);
-		while(navi.isNavigating())
+		nav.travelTo(-LSDist,0);
+		while(nav.isNavigating())
 		{
 			try {Thread.sleep(500);} 
 			catch (InterruptedException e) {e.printStackTrace();}
 		}
-		navi.turnTo(0);
+		nav.turnTo(0);
 		findMiddleOfLine();
-		odo.setTheta(0);
-		navi.travelTo(0, 0);
-		
+		nav.travelTo(0, 0);
+		while(nav.isNavigating())
+		{
+			try {Thread.sleep(500);} 
+			catch (InterruptedException e) {e.printStackTrace();}
+		}
 	}
 
 	private void driveToVerticalLine() 
@@ -171,7 +173,7 @@ public class LineSquarer
 		boolean lineRight = false;
 		
 		//both color must find the black line
-		while(!(lineLeft || lineRight))
+		while(!(lineLeft && lineRight))
 		{
 			leftReading = getLeftColorData();
 			rightReading = getRightColorData();
@@ -182,10 +184,12 @@ public class LineSquarer
 			}
 			else if(leftReading < 30)
 			{
-				leftMotor.stop(true);
-				rightMotor.stop(false);
 				lineLeft = true;
-				System.out.println("Found horizontal line on left.");
+				if(rightReading < 30)
+				{
+					lineRight = true;
+				}
+				System.out.println("Found vertical line on left.");
 			}
 			else
 			{
@@ -198,14 +202,36 @@ public class LineSquarer
 			}
 			else if(rightReading < 30)
 			{
-				leftMotor.stop(true);
-				rightMotor.stop(false);
 				lineRight = true;
-				System.out.println("Found horizontal line on right.");
+				if(leftReading < 30)
+				{
+					lineLeft = true;
+				}
+				System.out.println("Found vertical line on right.");
 			}
 			else
 			{
 				bufferRight = 0;
+			}
+			
+			if(lineLeft && !lineRight)
+			{
+				leftMotor.stop(true);
+				
+				rightMotor.setSpeed(low);
+				rightMotor.forward();
+			}
+			else if(lineRight && !lineLeft)
+			{
+				rightMotor.stop(true);
+				
+				leftMotor.setSpeed(low);
+				leftMotor.forward();
+			}
+			else if(lineRight&&lineLeft)
+			{
+				rightMotor.stop(true);
+				leftMotor.stop(false);
 			}
 			
 			try {Thread.sleep(10);} 
@@ -243,7 +269,7 @@ public class LineSquarer
 		while(leftReading < 30)
 		{
 			leftMotor.forward();
-			try {Thread.sleep(100);} 
+			try {Thread.sleep(50);} 
 			catch (InterruptedException e) {e.printStackTrace();}
 			leftReading = getLeftColorData();
 		}
@@ -256,13 +282,14 @@ public class LineSquarer
 		while(rightReading < 30)
 		{
 			rightMotor.forward();
-			try {Thread.sleep(100);} 
+			try {Thread.sleep(50);} 
 			catch (InterruptedException e) {e.printStackTrace();}
 			rightReading = getRightColorData();
 		}
 		rightMotor.stop();
 		rightTacho = rightMotor.getTachoCount() - rightTacho;
 		rightMotor.rotate(-rightTacho/2);
+		odo.setTheta(0);
 	}
 	
 	

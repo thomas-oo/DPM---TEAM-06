@@ -418,6 +418,63 @@ public class Navigator extends Thread
 		}
 		return 0; //IF SOMETHING GOES HORRIBLY WRONG, RETURN 0.
 	}
+	/**Uses the parameter x and y coordinates and the current x and y coordinates to calculate the desired heading (destTheta)
+	 * @return A desired heading (in radians).
+	 */
+	public double getDestAngle(int x, int y) //uses destDistance[0],[1] to calculate destTheta. destTheta is the heading with respect to coordinate system. 
+								  //(where the min is 0 (on positive x-axis), and max is 2pi. positive theta is counterclockwise angle from the positive x-axis.
+	{
+		double errorX = x - nowX;
+		double errorY = y - nowY;
+
+		if(Math.abs(errorX) < destThreshold)
+		{
+			if(errorY > 0)
+			{
+				return 0.5 * Math.PI; //90
+			}
+			else
+			{
+				return 1.5 * Math.PI; //270
+			}
+		}
+		else if(Math.abs(errorY) < destThreshold)
+		{
+			if(errorX > 0)
+			{
+				return 0.0; //0
+			}
+			else
+			{
+				return Math.PI; //180
+			}
+		}
+
+		
+		else if(errorX > 0) 
+		{
+			if(errorY > 0) //positive theta
+			{
+				return Math.atan(errorY/errorX);
+			}
+			else //converts quadrant 4 into a positive theta
+			{
+				return 2*Math.PI + Math.atan(errorY/errorX);
+			}
+		}
+		else if(errorX < 0)
+		{
+			if(errorY > 0) //quad 2, positive theta
+			{
+				return (Math.atan(errorY/errorX) + Math.PI);
+			}
+			else if(errorY < 0) //quad 3, positive theta
+			{
+				return (Math.atan(errorY/errorX) + Math.PI);
+			}
+		}
+		return 0; //IF SOMETHING GOES HORRIBLY WRONG, RETURN 0.
+	}
 	/**Sends command to left and right motors to turn a certain about of degrees so that the robot will turn to a desired heading. The turn itself will be a minimal turn ie. A turn CW/CCW of >180 degrees will be a turn CCW/CW of (360 - the desired >180 degrees). All angles in this method are in radians.
 	 * </p> Relies on WHEEL_RADIUS and TRACK to calculate each motor's rotation (in radians).
 	 * @param destTheta The desired heading that you want to robot to turn to.

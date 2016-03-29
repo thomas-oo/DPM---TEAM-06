@@ -6,6 +6,7 @@ import Robot.OdometryDisplay;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
@@ -20,26 +21,29 @@ public class Main
 	//creating instances of motors for use
 	public static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 	public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
-	//public static final EV3LargeRegulatedMotor headMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
+	public static final EV3MediumRegulatedMotor headMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("C"));
 	
-	public static final Port usPort = LocalEV3.get().getPort("S1");
-	public static final Port leftColorPort = LocalEV3.get().getPort("S2");
-	public static final Port rightColorPort = LocalEV3.get().getPort("S3");
+	public static final Port usPort = LocalEV3.get().getPort("S3");
+	public static final Port leftColorPort = LocalEV3.get().getPort("S4");
+	public static final Port rightColorPort = LocalEV3.get().getPort("S2");
 	
 	//specifications about robot, global and should be accessible.
-	public static double WHEEL_RADIUS = 2.09; //measure
-	public static double TRACK = 14.46;
-	public static double LS_DIST = 12.5;
+	public static double WHEEL_RADIUS = 2.03; //measure
+	public static double TRACK = 18.0;
+	public static double LS_DIST = 4.5;
+	public static int wallDist = 20;
 	public static int bandCenter = 20;
 	public static int bandWidth = 2;
+	//motorlow and high used for wall following.
 	public static int motorLow = 100;
-	public static int motorHigh = 200;
+	public static int motorHigh = 180;
 	public static int startingCorner = 1;
 	
 	//classes main will rely on
 	public static Navigator nav;
 	public static Odometer odometer;
 	public static OdometryDisplay odometryDisplay;
+	public static MileStoneBallGrab ballGrabber;
 	
 	@SuppressWarnings("resource")
 	public static SensorModes usSensor = new EV3UltrasonicSensor(usPort);
@@ -54,6 +58,8 @@ public class Main
 	public static SampleProvider rightColorValue = rightColorSensor.getMode("Red");
 	public static float[] rightColorData = new float[rightColorValue.sampleSize()];
 	
+	public static int llX, llY, urX, urY, SC;
+	
 	public static void main(String[] args) 
 	{
 		odometer = new Odometer();
@@ -62,24 +68,36 @@ public class Main
 		odometryDisplay.start();
 		nav = new Navigator();
 		nav.start();
+		ballGrabber = new MileStoneBallGrab();
 		
 		//parseParameters();
 		readyPosition();
+		parseParameters();
 		startPlaying();
 	}
 	
 	private static void parseParameters() //start wificonnection class, establish connection and set variables
 	{
+		// these variables will store the parameters received from the Wifi connection class
+		int ll_x = 0, ll_y = 0, ur_x = 6, ur_y = 6, sc = 1;
+		
+		ll_x *= 30; ll_y *= 30; ur_x *= 30; ur_y *= 30;
+		
+		// update the variables of this project to match the parameters received
+		// from teh Wifi connection class
+		llX = ll_x;
+		llY = ll_y;
+		urX = ur_x;
+		urY = ur_y;
+		SC = sc;
 		
 	}
 	private static void readyPosition() //start localization
 	{
 		USLocalizer usL = new USLocalizer();
 		usL.doLocalization();
-		Button.waitForAnyPress();
 		LineSquarer lineSquarer = new LineSquarer();
 		lineSquarer.squareWithLines();
-		Button.waitForAnyPress();
 		//once you get here, the robot will be at what it thinks is 0,0 and heading in 0. If the starting corner was 1, this would be fine.
 		
 		switch(startingCorner)
@@ -111,7 +129,30 @@ public class Main
 		}
 	}
 	private static void startPlaying() //take role, make either attacker/defender class, transfer control to that class
-	{
-		nav.travelTo(60, 60);
+	{	
+		// travel to the region near the ball platform
+		// where we can position the sensors to correctly identify the balls
+		int destX = urX - 60; //120
+		int destY = urY - 15; //165
+		nav.travelTo(destX, destY);
+		while(nav.isNavigating())
+		{
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		// make it turn south
+		nav.turnTo(Math.PI);
+		
+		// grab the ball
+		ballGrabber.grabBall();
+		
+		nav.turnTo(nav.getDestAngle(0, SC*30));
+		
+		// thorw ball
+		ballGrabber.throwBall();
 	}
 }

@@ -20,9 +20,9 @@ public class Main
 	public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	//public static final EV3LargeRegulatedMotor headMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
 	
-	public static final Port usPort = LocalEV3.get().getPort("S1");
-	public static final Port leftColorPort = LocalEV3.get().getPort("S2");
-	public static final Port rightColorPort = LocalEV3.get().getPort("S3");
+	public static final Port usPort = LocalEV3.get().getPort("S3");
+	public static final Port leftColorPort = LocalEV3.get().getPort("S4");
+	public static final Port rightColorPort = LocalEV3.get().getPort("S2");
 	
 	//specifications about robot, global and should be accessible.
 	public static double WHEEL_RADIUS = 2.09; //measure
@@ -80,9 +80,9 @@ public class Main
 	private static void parseParameters() //start wificonnection class, establish connection and set variables
 	{
 		// these variables will store the parameters received from the Wifi connection class
-		int ll_x = 0, ll_y = 0, ur_x = 0, ur_y = 0, sc = 0;
+		int ll_x = 0, ll_y = 0, ur_x = 6, ur_y = 6, sc = 1;
 		
-		ll_x *= 10; ll_y *= 10; ur_x *= 10; ur_y *= 10;
+		ll_x *= 30; ll_y *= 30; ur_x *= 30; ur_y *= 30;
 		
 		// update the variables of this project to match the parameters received
 		// from teh Wifi connection class
@@ -135,7 +135,7 @@ public class Main
 	{	
 		// travel to the region near the ball platform
 		// where we can position the sensors to correctly identify the balls
-		int destX = urX - 45;
+		int destX = urX - 60;
 		int destY = urY - 15;
 		nav.travelTo(destX, destY);
 		
@@ -144,6 +144,8 @@ public class Main
 		
 		// grab the ball
 		ballGrabber.grabBall();
+		
+		nav.turnTo(nav.getDestAngle(0, SC*30));
 		
 		// thorw ball
 		ballGrabber.throwBall();

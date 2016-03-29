@@ -17,7 +17,7 @@ public class USLocalizer
 	/**
 	 * The rotation speed of the motors (in deg/s) for localization.
 	 */
-	public static double ROTATION_SPEED = 110;
+	public static double ROTATION_SPEED = 300;
 	/**
 	 * The Odometer object that we use to access x, y, and theta values.
 	 */

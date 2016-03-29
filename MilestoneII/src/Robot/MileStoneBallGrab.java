@@ -18,31 +18,15 @@ import lejos.robotics.RegulatedMotor;
 import lejos.robotics.SampleProvider;
 import lejos.hardware.sensor.EV3TouchSensor;
 
-public class MileStoneBallGrab {
-	
-	//accessing the slave ports
-	String name = "slave";
-	RemoteRequestEV3 slave = null;
-	try {
-		slave = new RemoteRequestEV3(BrickFinder.find(name)[0].getIPAddress());
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	grabMotor = slave.createRegulatedMotor("B", 'M');
-	leftMotor = slave.createRegulatedMotor("A", 'L');
-	rightMotor = slave.createRegulatedMotor("D", 'L');
-
-	Port usPort = slave.getPort("S1");
-	Port colorPort = slave.getPort("S2");
-	
+public class MileStoneBallGrab 
+{
 	//V1.0  for BallGrab_V1.0
-	static final EV3MediumRegulatedMotor grabMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("B"));
+	static RegulatedMotor grabMotor;
 	final static int speed =  200;
 
 	//V2.0  for BallGrab_V2.0
-	static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
-	static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
+	static RegulatedMotor leftMotor;
+	static RegulatedMotor rightMotor;
 	/*	static RegulatedMotor grabMotor;
 		static RegulatedMotor leftMotor;
 		static RegulatedMotor rightMotor;*/
@@ -50,6 +34,23 @@ public class MileStoneBallGrab {
 	final static int forwardSpeed = 900;
 	final static int holdingSpeed = 50;
 	final static int acceleration = 6000;
+	
+	public MileStoneBallGrab()
+	{
+		//accessing the slave ports
+		String name = "slave";
+		RemoteRequestEV3 slave = null;
+		try {
+			slave = new RemoteRequestEV3(BrickFinder.find(name)[0].getIPAddress());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		grabMotor = slave.createRegulatedMotor("B", 'M');
+		leftMotor = slave.createRegulatedMotor("A", 'L');
+		rightMotor = slave.createRegulatedMotor("D", 'L');
+	}
 	
 	public void grabBall()
 	{
@@ -76,5 +77,8 @@ public class MileStoneBallGrab {
 
 
 		grabMotor.rotate(-90);
+		
+		leftMotor.flt();
+		rightMotor.flt();
 	}
 }
