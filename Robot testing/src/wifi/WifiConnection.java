@@ -1,0 +1,64 @@
+/*
+* @author Sean Lawlor
+* @date November 3, 2011
+* @class ECSE 211 - Design Principle and Methods
+*
+* Modified by F.P. Ferrie
+* February 28, 2014
+* Changed parameters for W2014 competition
+* 
+* Modified by Francois OD
+* November 11, 2015
+* Ported to EV3 and wifi (from NXT and bluetooth)
+* Changed parameters for F2015 competition
+*/
+package wifi;
+
+import java.io.*;
+import java.net.Socket;
+import java.util.HashMap;
+
+/*
+ * This class opens a wifi connection, waits for the data
+ * and then allows access to the data after closing the wifi socket.
+ * 
+ * It should be used by calling the constructor which will automatically wait for
+ * data without any further user command
+ * 
+ * Once completed, the HashMap<String,Integer> with the start values is accessible from the field StartData
+ */
+public class WifiConnection {
+	
+	public HashMap<String,Integer> StartData;
+		
+	public WifiConnection(String serverIP, int teamNumber) throws IOException {
+		
+		System.out.println("WiFi Connection started");
+		
+		// Open connection to the server and data streams
+		int port = 2000 + teamNumber; //semi-abritrary port number"
+		System.out.println("Opening wifi connection to server at IP: " + serverIP);
+	    Socket socketClient = new Socket(serverIP, port);
+	    System.out.println("Connected to server");
+		DataOutputStream dos = new DataOutputStream(socketClient.getOutputStream());
+		DataInputStream dis = new DataInputStream(socketClient.getInputStream());
+
+		// Wait for the server transmission to arrive
+		System.out.println("Waiting for transmission...");
+		while(dis.available() <= 0)
+			try {Thread.sleep(10);} catch (InterruptedException e) {}
+		System.out.println("Receiving transmission");		
+		
+		// Parse transmission
+		this.StartData = ParseTransmission.parseData(dis);
+		System.out.println("Finished parsing");
+		
+		// End the wifi connection
+		dis.close();
+		dos.close();
+		socketClient.close();
+		System.out.println("Connection terminated");
+		
+	}
+	
+}

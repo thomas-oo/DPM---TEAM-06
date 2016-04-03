@@ -3,7 +3,6 @@ package Robot;
 import Robot.Odometer;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
-import lejos.hardware.port.Port;
 import lejos.robotics.SampleProvider;
 
 
@@ -303,7 +302,7 @@ public class Navigator extends Thread
 		private boolean checkEmergency() { //checking if it's too close to the wall
 			if(usDistance <= wallDist)
 				return true;
-			else 
+			else
 				return false;
 		}
 		/**

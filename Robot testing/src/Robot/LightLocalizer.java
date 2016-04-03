@@ -1,4 +1,5 @@
 package Robot;
+
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
@@ -218,6 +219,7 @@ public class LightLocalizer {
 	 * @param angle Angle in radians to be converted
 	 * @return The same angle in degrees
 	 */
+	@SuppressWarnings("unused")
 	private double toDegrees(double angle) 
 	{
 		return 57.2958 * angle;

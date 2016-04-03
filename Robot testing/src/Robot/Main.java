@@ -1,5 +1,8 @@
 package Robot;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 import Robot.Navigator;
 import Robot.Odometer;
 import Robot.OdometryDisplay;
@@ -12,8 +15,7 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
-
-
+import wifi.WifiConnection;
 
 public class Main 
 {
@@ -27,6 +29,7 @@ public class Main
 	public static final Port leftColorPort = LocalEV3.get().getPort("S4");
 	public static final Port rightColorPort = LocalEV3.get().getPort("S2");
 	
+	
 	//specifications about robot, global and should be accessible.
 	public static double WHEEL_RADIUS = 2.03; //measure
 	public static double TRACK = 18.0;
@@ -37,15 +40,24 @@ public class Main
 	//motorlow and high used for wall following.
 	public static int motorLow = 100;
 	public static int motorHigh = 180;
+	
+	// parameters received from WiFi
 	public static int startingCorner = 1;
+	public static int role; // attacker is 0, defender is 1
+	public static int goalWidth;
+	public static int defenderLine;
+	public static int forwardLine;
+	public static int lowerLeftX;
+	public static int lowerLeftY;
+	public static int upperRightX;
+	public static int upperRightY;
+	public static int ballColour;
 	
 	//classes main will rely on
-	public static Navigator nav;
 	public static Odometer odometer;
 	public static OdometryDisplay odometryDisplay;
-	public static MileStoneBallGrab ballGrabber;
+	public static Navigator nav;
 	
-	@SuppressWarnings("resource")
 	public static SensorModes usSensor = new EV3UltrasonicSensor(usPort);
 	public static SampleProvider usValue = usSensor.getMode("Distance");
 	public static float[] usData = new float[usValue.sampleSize()];
@@ -58,39 +70,66 @@ public class Main
 	public static SampleProvider rightColorValue = rightColorSensor.getMode("Red");
 	public static float[] rightColorData = new float[rightColorValue.sampleSize()];
 	
-	public static int llX, llY, urX, urY, SC;
-	
+	// WIFI Class 
+	private static final String SERVER_IP = "192.168.0.101";//"localhost"; //1. SERVER_IP: the IP address of the computer running the server application
+	private static final int TEAM_NUMBER = 6;	// 2. TEAM_NUMBER: your project team number
+
+		
 	public static void main(String[] args) 
 	{
 		odometer = new Odometer();
 		odometer.start();
+		
 		odometryDisplay = new OdometryDisplay();
 		odometryDisplay.start();
+		
 		nav = new Navigator();
 		nav.start();
-		ballGrabber = new MileStoneBallGrab();
 		
-		//parseParameters();
-		readyPosition();
 		parseParameters();
-		startPlaying();
+		readyPosition();
+		
+		Player player = new Player();
+		player.startPlaying();		
 	}
 	
 	private static void parseParameters() //start wificonnection class, establish connection and set variables
 	{
-		// these variables will store the parameters received from the Wifi connection class
-		int ll_x = 0, ll_y = 0, ur_x = 6, ur_y = 6, sc = 1;
 		
-		ll_x *= 30; ll_y *= 30; ur_x *= 30; ur_y *= 30;
+		WifiConnection conn = null;
 		
-		// update the variables of this project to match the parameters received
-		// from teh Wifi connection class
-		llX = ll_x;
-		llY = ll_y;
-		urX = ur_x;
-		urY = ur_y;
-		SC = sc;
+		try {
+			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
+		if (conn != null){
+			
+			HashMap<String,Integer> t = conn.StartData;
+			if (t == null)
+				System.out.println("Failed to read transmission");
+			else {
+				System.out.println("Transmission read");
+				
+				// initialize variables
+				startingCorner = t.get("SC");
+				role = t.get("Role");
+				goalWidth = t.get("w1");
+				defenderLine = t.get("d1");
+				forwardLine = t.get("d2");
+				lowerLeftX = t.get("ll-x");
+				lowerLeftY = t.get("ll-y");
+				upperRightX = t.get("ur-x");
+				upperRightY = t.get("ur-y");
+				ballColour = t.get("BC");
+				
+			}
+			
+		} else {
+			System.out.println("Transmission failed");
+		}
+				
 	}
 	private static void readyPosition() //start localization
 	{
@@ -128,31 +167,5 @@ public class Main
 			break;
 		}
 	}
-	private static void startPlaying() //take role, make either attacker/defender class, transfer control to that class
-	{	
-		// travel to the region near the ball platform
-		// where we can position the sensors to correctly identify the balls
-		int destX = urX - 60; //120
-		int destY = urY - 15; //165
-		nav.travelTo(destX, destY);
-		while(nav.isNavigating())
-		{
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		// make it turn south
-		nav.turnTo(Math.PI);
-		
-		// grab the ball
-		ballGrabber.grabBall();
-		
-		nav.turnTo(nav.getDestAngle(0, SC*30));
-		
-		// thorw ball
-		ballGrabber.throwBall();
-	}
+
 }

@@ -1,3 +1,4 @@
+
 package Robot;
 
 import Robot.Navigator;
@@ -45,10 +46,11 @@ public class ObstacleAvoidance extends Thread
 		this.sampleProvider = sampleProvider;
 		this.usData = new float[sampleProvider.sampleSize()];
 	}
-	public void run()
-	{
-		while(!safe)
-		{
+	
+	public void run() {
+		
+		while(!safe) {
+			
 			int distance;
 			sampleProvider.fetchSample(usData,0);
 			distance=(int)(usData[0]*100.0);
@@ -65,86 +67,77 @@ public class ObstacleAvoidance extends Thread
 			calcTheta = convertTheta(calcTheta);
 			
 			
-			if (Math.abs(calcTheta- idealTheta) <= thetaThreshold)
-			{
-				if(Math.abs(avoidanceNowX - pastX) < distThreshold && Math.abs(avoidanceNowY - pastY) < distThreshold) //
-				{
+			if (Math.abs(calcTheta - idealTheta) <= thetaThreshold) {
+				if(Math.abs(avoidanceNowX - pastX) < distThreshold && Math.abs(avoidanceNowY - pastY) < distThreshold) 
 					processUSData(distance);
-				}
 				else
-				{
 					safe = true;
-				}
-			}
-			else
-			{
+			} else {
 				processUSData(distance);
 			}
-		}	
+			
+		}
+		
+		try
+		{
+			Thread.sleep(30);
+		}
+		catch(InterruptedException e)
+		{
+			e.printStackTrace();
+		} 	
+		
 	}
-	private double convertTheta(double calcTheta2) 
-	{
-		if(calcX > 0) 
-		{
-			if(calcY > 0) //positive theta
-			{
+	
+	private double convertTheta(double calcTheta2) {
+		
+		if(calcX > 0) {
+			
+			if(calcY > 0)//positive theta 
 				return Math.atan(calcY/calcX);
-			}
 			else //converts quadrant 4 into a positive theta
-			{
 				return 2*Math.PI + Math.atan(calcY/calcX);
-			}
-		}
-		else if(calcX < 0)
-		{
+			
+		} else if(calcX < 0) {
+			
 			if(calcY > 0) //quad 2, positive theta
-			{
 				return (Math.atan(calcY/calcX) + Math.PI);
-			}
 			else if(calcY < 0) //quad 3, positive theta
-			{
 				return (Math.atan(calcY/calcX) + Math.PI);
-			}
-		}
-		else if(Math.abs(calcX) < distThreshold)
-		{
+			
+		} else if(Math.abs(calcX) < distThreshold){
+			
 			if(calcY > 0)
-			{
 				return 0.5*Math.PI;
-			}
 			else
-			{
 				return 1.5*Math.PI;
-			}
-		}
-		else if(Math.abs(calcY) < distThreshold)
-		{
+			
+		} else if(Math.abs(calcY) < distThreshold) {
 			
 			if(calcX > 0)
-			{
 				return 0;
-			}
 			else
-			{
 				return Math.PI;
-			}
 			
 		}
+		
 		return 0.0; //if all else goes wrong
+		
 	}
+	
 	public void processUSData(int distance) { //this is bang bang
 
 		int difference = distance - bandCenter;
-		if (Math.abs(difference)<=(bandwidth)){
+		
+		if (Math.abs(difference)<=(bandwidth)) {
 			leftMotor.setSpeed(motorHigh);
 			rightMotor.setSpeed(motorHigh);
 			leftMotor.forward();
 			rightMotor.forward();
 		}
 
-
 		//if EV3 is too far from the wall
-		else if ((difference)>0){
+		else if ((difference)>0) {
 			leftMotor.setSpeed(motorLow);
 			rightMotor.setSpeed(motorHigh);
 			leftMotor.forward();
@@ -152,16 +145,19 @@ public class ObstacleAvoidance extends Thread
 		}
 
 		//if Ev3 is too close to the wall
-		else if ((difference)<0){
+		else if ((difference)<0) {
 			leftMotor.setSpeed(motorHigh);
 			rightMotor.setSpeed(motorLow);
 			leftMotor.forward();
 			rightMotor.forward();
 		}
+		
 	}
+	
 	public int readUSDistance() {
 		return this.readUSDistance();
 	}
+	
 	public boolean getSafe()
 	{
 		return this.safe;

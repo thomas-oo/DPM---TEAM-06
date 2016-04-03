@@ -1,7 +1,5 @@
 package Robot;
-import lejos.hardware.Button;
-import lejos.hardware.Sound;
-import lejos.hardware.ev3.LocalEV3;
+
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 
@@ -236,6 +234,7 @@ public class USLocalizer
 	}
 	/** Corrects the heading depending on the corner that is starts at
 	 */
+	@SuppressWarnings("unused")
 	private void correctHeading() 
 	{
 		switch (this.startingCorner)
