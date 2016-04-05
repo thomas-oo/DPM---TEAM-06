@@ -17,7 +17,7 @@ import lejos.utility.Delay;
 public class ColorDetectionTester {
 	
 	//initializing EV3ColorSensor
-	private static final Port colorPort = LocalEV3.get().getPort("S2");
+	private static final Port colorPort = LocalEV3.get().getPort("S4");
 	private static EV3ColorSensor colorSensor = new EV3ColorSensor(colorPort);
 	private static SensorMode colorValue = colorSensor.getMode("RGB");
 	private static int sampleSize = colorValue.sampleSize();
@@ -31,6 +31,8 @@ public class ColorDetectionTester {
 	{
 		BallColorDetector detector = new BallColorDetector(colorSensor, colorData, colorValue);
 		detector.start();
+		System.out.println(detector.getColor());
+		
 		
 		Button.waitForAnyPress();
 		System.exit(0);

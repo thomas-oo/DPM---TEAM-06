@@ -11,5 +11,10 @@ public class Main {
 		ballGrabber = new BallGrab();
 		ballGrabber.grabBall();
 	}
+	
+	public static int convertDistance(double radius, double distance)  //converts linear distance that wheels need to travel into rotations (deg) that the wheels need to perform
+	{
+		return (int) ((90.0 * distance) / (Math.PI * radius));
+	}
 
 }

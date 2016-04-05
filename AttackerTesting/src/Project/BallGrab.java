@@ -18,11 +18,12 @@ import lejos.robotics.SampleProvider;
 
 public class BallGrab { 
 	
+	
 	//color being passed into the class (1 for red, 2 for blue)
-	int color = 2;
+	int color = 1;
 	
 	//the wheels of the robot
-	//public static final EV3LargeRegulatedMotor mainleftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+	public static final EV3LargeRegulatedMotor mainleftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 	public static final EV3LargeRegulatedMotor mainrightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	EV3LargeRegulatedMotor mainLeftMotor; //master
 	EV3LargeRegulatedMotor mainRightMotor; //master 
@@ -52,11 +53,12 @@ public class BallGrab {
 	public static SampleProvider usSampleProvider = usSensor.getMode("Distance");
 	public static float[] usData = new float[usSampleProvider.sampleSize()];
 	public double usDistance;
+	public double initialDistance;
 	
 	//V1.0  for BallGrab_V1.0
 //	public static final EV3MediumRegulatedMotor grabMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("S1"));
 //	static RegulatedMotor grabMotor;
-	final static int speed =  4000;
+	final static int speed =  200;
 	
 	//V2.0  for BallGrab_V2.0
 //	public static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
@@ -68,7 +70,7 @@ public class BallGrab {
 	final static int holdingSpeed = 50;
 	final static int acceleration = 6000;
 	
-/*	public BallGrab(int color)
+	/*public BallGrab(int color)
 	{
 		this.color = color;	
 
@@ -101,22 +103,25 @@ public class BallGrab {
 			if (ballDetection())
 			{
 				System.out.println("Found ball");
-				if (findColor() == color)
+//				if (findColor() == color)
+				boolean testing = true;
+				if (testing= true)
 				{
+					int MidBall =  Main.convertDistance(1.5, 4);
 					mainMotorSetSpeeds(normalSpeed,normalSpeed);
-					mainleftMotor.rotate(-30,true); //CHANGE VALUE SO THAT IT ROTATES TO MIDWAY ACCROSS THE BALL
-					mainrightMotor.rotate(-30,false);
-					mainleftMotor.forward();
-					mainrightMotor.forward();
+					mainleftMotor.rotate(-MidBall,true); 
+					mainrightMotor.rotate(-MidBall,false);
+					mainleftMotor.backward();
+					mainrightMotor.backward();
 					
-					//turn and move forward to grab the ball
-					mainleftMotor.rotate(-90,true);
-					mainrightMotor.rotate(90,false);
+					//turn and move forward to grab the ball use the localizer class? (stop rotating when you detect two lines)
+					mainleftMotor.rotate(360,true);
+					mainrightMotor.rotate(-360,false);
 					
-					//backup and use touch sensor to detect the edge of the platform? then move forward?? 
 					//right now it's rotating a certain number of turns, not always reliable.
-					mainleftMotor.rotate(360, true);
-					mainrightMotor.rotate(360,false);
+					int DistFromBall = Main.convertDistance(1.5, 33.5);
+					mainleftMotor.rotate(DistFromBall, true);
+					mainrightMotor.rotate(DistFromBall,false);
 					
 					System.out.println("I'm going to grab the ball now");
 					
@@ -145,30 +150,35 @@ public class BallGrab {
 	public void throwBall()
 	{
 /*		//V2.0  for BallGrab_V2.0
+ 		motorSetSpeeds(holdingSpeed,holdingSpeed); //have the arm rotate down
+		leftMotor.rotate(110,true);
+		rightMotor.rotate(110,false);
+		
 		leftMotor.setAcceleration(acceleration);
 		rightMotor.setAcceleration(acceleration);
-		leftMotor.setSpeed(forwardSpeed);
-		rightMotor.setSpeed(forwardSpeed);
+		motorSetSpeeds(forwardSpeed,forwardSpeed)
 		leftMotor.rotate(-150,true);
 		rightMotor.rotate(-150,false);
 
 
-		grabMotor.rotate(-90);*/
+		grabMotor.rotate(-90); //open the claw
+		*/
 	}
 	
 	//returns true when the Robot detects a ball
 	private boolean ballDetection()
 	{
-			usSampleProvider.fetchSample(usData, 0);
-			usDistance = (double)(usData[0]*100.0);
-			System.out.println(usDistance);
-			
+		usSampleProvider.fetchSample(usData, 0);
+//		initialDistance = (double)(usData[0]*100.0); //the first distance that it detects (should be away from the platform)
+		usDistance = (double)(usData[0]*100.0); //use as first comparator
+		System.out.println(initialDistance);
+
 		System.out.println("got my data");
 		
 		int normalSpeed = 50;
 		
 		//while the robot isn't seeing an object
-		while (usDistance==0||usDistance>4) //this distance needs to be changed
+		while (usDistance==0||usDistance>7) //the robot will keep moving forward as long as the distance it detected is 0 (some kind of error)
 		{
 			usSampleProvider.fetchSample(usData, 0);
 			usDistance = (double)(usData[0]*100.0);
@@ -180,7 +190,7 @@ public class BallGrab {
 		mainleftMotor.stop();
 		mainrightMotor.stop();
 		
-		return true;
+		return true; 
 	}
 	
 	//finding out what color the ball detected is
@@ -192,22 +202,26 @@ public class BallGrab {
 		int colorFound = 0;
 		
 		BallColorDetector detector = new BallColorDetector(colorSensor, colorData, colorValue);
-		detector.start();
+		detector.start(); //detect the color at that specific instant
 		
 		usSampleProvider.fetchSample(usData, 0);
+//		initialDistance = (double)(usData[0]*100.0);
 		usDistance = (double)(usData[0]*100.0);
 		
-		while (usDistance<5)
+		while (usDistance!=0 && usDistance<4) //as soon as the ultrasonicSensor detects the next distance to be a large value, it will get out of this loop
+		//somehow, this doesn't work, it doesn't go out of the loop even if distance >4
 		{			
 			usSampleProvider.fetchSample(usData, 0);
 			usDistance = (double)(usData[0]*100.0);
 			
-			mainleftMotor.setSpeed(detectionSpeed); //slow down
-			mainrightMotor.setSpeed(detectionSpeed); //slow down
+			System.out.println("usDistance" + usDistance);
+			
+			mainMotorSetSpeeds(detectionSpeed, detectionSpeed); //slow down
+ 
 			mainleftMotor.forward();
 			mainrightMotor.forward();
 			
-			System.out.println(detector.getColor());
+			System.out.println("detector color : " + detector.getColor());
 			
 			if (detector.getColor() == 1)
 			{
@@ -220,8 +234,8 @@ public class BallGrab {
 			}
 		}
 		
-		System.out.println(redColorCount);
-		System.out.println(blueColorCount);
+		System.out.println("redColorCount" + redColorCount);
+		System.out.println("blueColorCount" + blueColorCount);
 		
 		mainleftMotor.stop();
 		mainrightMotor.stop();
@@ -241,7 +255,7 @@ public class BallGrab {
 	}
 	
 	
-/*	public void motorSetSpeeds(int leftSpeed, int rightSpeed) //sets motor speeds
+	/*public void motorSetSpeeds(int leftSpeed, int rightSpeed) //sets motor speeds
 	{
 		leftMotor.setSpeed(leftSpeed);
 		rightMotor.setSpeed(rightSpeed);
