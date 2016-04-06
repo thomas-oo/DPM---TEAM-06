@@ -89,14 +89,14 @@ public class BallColorDetector {
 				}
 				
 				//if this code detects the color red 5 times, will report as detected red and get out of the loop
-				if (redCount ==3)
+				if (redCount ==5)
 				{
 					redColorDetected = true;
 					break;
 				}
 				
 				//if this code detects the color blue 5 times, will report as detected blue and get out of the loop
-				if (blueCount ==3)
+				if (blueCount ==5)
 				{
 					blueColorDetected = true;
 					break;
