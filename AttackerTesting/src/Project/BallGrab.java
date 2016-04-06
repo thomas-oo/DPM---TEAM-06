@@ -59,16 +59,16 @@ public class BallGrab {
 	public double usDistance;
 	public double initialDistance;
 	
-	//V1.0  for BallGrab_V1.0
-//	public static final EV3MediumRegulatedMotor grabMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("S1")); //NOT USED IN ACTUAL CODE
+	//V1.0  for BallGrab_V1.0 FOR GRABBING
+	public static final EV3MediumRegulatedMotor grabMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("S1")); //NOT USED IN ACTUAL CODE
 //	static RegulatedMotor grabMotor;//NOT USED IN ACTUAL CODE
 	final static int speed =  200;
 	
-	//V2.0  for BallGrab_V2.0
-//	public static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));//NOT USED IN ACTUAL CODE
-//	public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));//NOT USED IN ACTUAL CODE
-/*	static RegulatedMotor leftMotor;//NOT USED IN ACTUAL CODE
-	static RegulatedMotor rightMotor;//NOT USED IN ACTUAL CODE*/
+	//V2.0  for BallGrab_V2.0 FOR SHOOTING
+	public static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));//NOT USED IN ACTUAL CODE
+	public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));//NOT USED IN ACTUAL CODE
+//	static RegulatedMotor leftMotor;//NOT USED IN ACTUAL CODE
+//	static RegulatedMotor rightMotor;//NOT USED IN ACTUAL CODE
 	final static int loweringSpeed = 200;
 	final static int forwardSpeed = 900;
 	final static int holdingSpeed = 50;
@@ -138,7 +138,9 @@ public class BallGrab {
 					
 					System.out.println("I'm going to grab the ball now");
 					
-/*					//V2.0  for BallGrab_V2.0
+					// THE FOLLOWING THREE PIECES OF CODES WERE NOT TESTED YET
+					
+					//V2.0  for BallGrab_V2.0
 					motorSetSpeeds(loweringSpeed,loweringSpeed);
 					leftMotor.rotate(180,true);
 					rightMotor.rotate(180,false);
@@ -150,7 +152,7 @@ public class BallGrab {
 					//hold the ball at a rather vertical angle
 					motorSetSpeeds(holdingSpeed,holdingSpeed);
 					leftMotor.rotate(-110,true);
-					rightMotor.rotate(-110,false);*/
+					rightMotor.rotate(-110,false);
 					
 					grabbed = true;
 				}
@@ -170,23 +172,23 @@ public class BallGrab {
 		}
 	}
 	
-	//returns true when the robot detects a ball
+	//returns true when the robot detects a ball THIS NEEDS TO BE TESTED
 	public void throwBall()
 	{
-/*		//V2.0  for BallGrab_V2.0
+		//V2.0  for BallGrab_V2.0
  		motorSetSpeeds(holdingSpeed,holdingSpeed); //have the arm rotate down
 		leftMotor.rotate(110,true);
 		rightMotor.rotate(110,false);
 		
 		leftMotor.setAcceleration(acceleration);
 		rightMotor.setAcceleration(acceleration);
-		motorSetSpeeds(forwardSpeed,forwardSpeed)
+		motorSetSpeeds(forwardSpeed,forwardSpeed);
 		leftMotor.rotate(-150,true);
 		rightMotor.rotate(-150,false);
 
 
 		grabMotor.rotate(-90); //open the claw
-		*/
+		
 	}
 	
 	//returns true when the Robot detects a ball
@@ -239,11 +241,11 @@ public class BallGrab {
 	}
 	
 	
-	/*public void motorSetSpeeds(int leftSpeed, int rightSpeed) //sets motor speeds
+	public void motorSetSpeeds(int leftSpeed, int rightSpeed) //sets motor speeds
 	{
 		leftMotor.setSpeed(leftSpeed);
 		rightMotor.setSpeed(rightSpeed);
-	}*/
+	}
 	
 	public void mainMotorSetSpeeds(int leftSpeed, int rightSpeed) //sets motor speeds
 	{
