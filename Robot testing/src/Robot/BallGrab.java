@@ -18,21 +18,51 @@ import lejos.robotics.RegulatedMotor;
 import lejos.robotics.SampleProvider;
 import lejos.hardware.sensor.EV3TouchSensor;
 
+/**
+ * This class accomplishes the task of grabbing the ball. This class is working on the assumption that 
+ * the robot is in a position so that when the arm is lowered, the ball is underneath. This class takes
+ * no arguments in its constructor. This class also utilizes a "slave" EV3 brick that is named slave.
+ * This is so that additional output ports can be accessed. We use ports A and D for left and right motors
+ * respectively, as well as port B for the motor that will grab the ball via a claw.
+ * On a related note, this class assumes that the master EV3 (the one where the codebase is uploaded to) has already established
+ * communication with slave. If it doesn't, the program crashes. To make sure the master can talk to slave,
+ * turn on the slave EV3 and make sure it is fully turned on and connected to master. Then turn the master EV3
+ * on and now, you can use this class without crashing your program.
+ * @author Thomas
+ *
+ */
 public class BallGrab 
 {
 	//V1.0  for BallGrab_V1.0
+	/**
+	 * Motor that grabs the ball via a claw.
+	 */
 	static RegulatedMotor grabMotor;
 	final static int speed =  200;
 
 	//V2.0  for BallGrab_V2.0
+	/**
+	 * Left motor that rotates the axle to shoot the ball.
+	 */
 	static RegulatedMotor leftMotor;
+	/**
+	 * Right motor that rotates the axle to shoot the ball.
+	 */
 	static RegulatedMotor rightMotor;
 	/*	static RegulatedMotor grabMotor;
 		static RegulatedMotor leftMotor;
 		static RegulatedMotor rightMotor;*/
+	/**
+	 * Speed of motors in (deg/s) that we rotate the motors at to lower the arm
+	 */
 	final static int loweringSpeed = 200;
+	/**
+	 * Speed of motors in (deg/s) that we rotate the motors at to catapult the ball
+	 */
 	final static int forwardSpeed = 900;
-	final static int holdingSpeed = 50;
+	/**
+	 * Acceleration of left and right motors when we catapult the ball
+	 */
 	final static int acceleration = 6000;
 	
 	public BallGrab()

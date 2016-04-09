@@ -264,7 +264,7 @@ public class Navigator extends Thread
 
 					headMotor.rotate(45);
 
-					avoidance = new ObstacleAvoidance(this, nowX, nowY, nowTheta, odometer,leftMotor, rightMotor,bandCenter, bandWidth,
+					avoidance = new ObstacleAvoidance(nowX, nowY, nowTheta, odometer,leftMotor, rightMotor,bandCenter, bandWidth,
 							motorLow, motorHigh, usSampleProvider);
 					avoidance.start(); 
 					try 
