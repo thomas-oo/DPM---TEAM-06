@@ -5,15 +5,12 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.robotics.SampleProvider;
 
-
-
-
 /**
  * This class accomplishes the task of Navigation, that is, it is responsible for sending commands to the motors to go to a coordinate.
  * In addition to movement, this class can also rotate the robot to a certain heading using an Odometer.
  * The methods in this class are all private and non static. The variables used in this navigator are private but this class uses a few public variables from the main method.
  * 
- * @author Thomas
+ * @author Thomas, Aagnik
  */
 public class Navigator extends Thread
 {
@@ -130,6 +127,10 @@ public class Navigator extends Thread
 	 * Stores the high motor speed (in deg/s). This is set in Main. This is a final (constant) variable.
 	 */
 	private final int motorHigh;
+	/** 
+	 * Status of whether the robot is playing. True if it's playing. False if it's not (i.e. it's localizing or travelling to home zone)
+	 */
+	private boolean isPlaying;
 	/**
 	 * This constructor takes NO inputs. The constructor will its class variables to the ones set in Main. We do not except these variables to change.
 	 */
@@ -156,6 +157,16 @@ public class Navigator extends Thread
 		 * The state that Navigator goes into when the robot is traveling (linear movement).
 		 */
 		TRAVELING};
+		
+	/** 
+	 * This stores the possible roles that the player can take on. 
+	 * @author Aagnik
+	 */
+	enum Role {Attacker, Defender}
+	/**
+	 * Private variable to store the role of the player
+	 */
+	private Role role;
 
 		/**
 		 * Constructor for Navigator class. Takes no inputs but inherits many variables from Main.
@@ -175,6 +186,9 @@ public class Navigator extends Thread
 
 			this.usSampleProvider = Main.usValue;
 			this.usData = new float[usSampleProvider.sampleSize()];
+			
+			if (Main.role == 0) this.role = Role.Attacker;
+			else if (Main.role == 1) this.role = Role.Defender;
 		}
 
 		public void run()
@@ -264,7 +278,7 @@ public class Navigator extends Thread
 
 					headMotor.rotate(45);
 
-					avoidance = new ObstacleAvoidance(nowX, nowY, nowTheta, odometer,leftMotor, rightMotor,bandCenter, bandWidth,
+					avoidance = new ObstacleAvoidance(this, nowX, nowY, nowTheta, odometer,leftMotor, rightMotor,bandCenter, bandWidth,
 							motorLow, motorHigh, usSampleProvider);
 					avoidance.start(); 
 					try 
@@ -300,7 +314,7 @@ public class Navigator extends Thread
 		 * False if we do not see an obstacle.
 		 */
 		private boolean checkEmergency() { //checking if it's too close to the wall
-			if(usDistance <= wallDist)
+			if(usDistance <= wallDist || enteringForbiddenZone())
 				return true;
 			else
 				return false;
@@ -549,5 +563,77 @@ public class Navigator extends Thread
 		public void setNavigating(boolean isNavigating) //sets isNavigating if ever needed (unused here)
 		{
 			this.isNavigating = isNavigating;
+		}
+		/**
+		 * A public setter for setting the playing variable to true or false
+		 * @param isPlaying Flag that tells if the robot is playing
+		 */
+		public void setPlaying(boolean isPlaying)
+		{
+			this.isPlaying = isPlaying;
+		}
+		/**
+		 * Determines if the player is navigating into the forbidden zone
+		 * @ return True if entering forbidden zone, false if not
+		 */
+		private boolean enteringForbiddenZone()
+		{
+			// get values of the odometer
+			double x = odometer.getX();
+			double y = odometer.getY();
+			double theta = odometer.getTheta();
+
+			// if the robot is playing and the robot is approaching the forbidden zones
+			// For attacker, forbidden zones are: RED REGION
+			// For defender, forbidden zones are: BLUE REGION, GREEN REGION
+			// return FALSE
+			if (isPlaying)
+			{
+				if (role == Role.Attacker)
+				{
+					if (x >= 30 || x <= 9*30)
+					{
+						if (Math.abs(y - 8*30) <= 5 && Math.abs(theta - Math.PI/2) <= 10) return true;
+						else if (Math.abs(y - 10*30) <= 5 && Math.abs(theta - 3*Math.PI/2) <= 10) return true;
+					} 
+					else if (Math.abs(x - 30) <= 5 && Math.abs(theta) <= 10) return true; 
+					else if (Math.abs(x - 9*30) <= 5 && Math.abs(theta - Math.PI) <= 10) return true;
+				}
+				else if (role == Role.Defender)
+				{
+					if (x >= 30 || x <= 9*30)
+					{
+						if (Math.abs(y - 8*30) <= 5 && Math.abs(theta - 3 * Math.PI/2) <= 10) return true;
+						else if (Math.abs(y - 10*30) <= 5 && Math.abs(theta - Math.PI/2) <= 10) return true;
+					} 
+					else if (Math.abs(x - 30) <= 5 && Math.abs(theta - Math.PI) <= 10) return true; 
+					else if (Math.abs(x - 9*30) <= 5 && Math.abs(theta) <= 10) return true;
+				}
+			}
+			// if the robot is travelling to home zone and the robot is approaching the forbidden zones
+			// For attacker, forbidden zones are: RED REGION, BLUE REGION
+			// For defender, forbidden zones are: BLUE REGION, GREEN REGION
+			// return TRUE
+			else if (!isPlaying) 
+			{
+				if (role == Role.Attacker)
+				{
+					if (y >= 2*30 && y <= 10*30)
+					{
+						if (Math.abs(x - 30) <= 5 && Math.abs(theta) <= 10) return true; 
+						else if (Math.abs(x - 9*30) <= 5 && Math.abs(theta - Math.PI) <= 10) return true;
+					}
+				}
+				else if (role == Role.Defender)
+				{
+					if (y >= 30 && y <= 8*30)
+					{
+						if (Math.abs(x - 30) <= 5 && Math.abs(theta) <= 10) return true; 
+						else if (Math.abs(x - 9*30) <= 5 && Math.abs(theta - Math.PI) <= 10) return true;
+					}
+				}
+			}
+			// if none of the conditions above were satisfied then the robot is safe
+			return false;
 		}
 }
