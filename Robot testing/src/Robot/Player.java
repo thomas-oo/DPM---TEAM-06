@@ -11,7 +11,7 @@ public class Player
 	// role taken by Player
 	private enum Role {Attacker, Defender};
 	private Role role;
-	
+		
 	// the corner at which the player starts
 	private int startingCorner;
 	
@@ -61,11 +61,13 @@ public class Player
 	// code to expand the defense wall
 	private void defend() {
 		
-		
+		navigator.setPlaying(true);
 	}
 	
 	// code to attack
 	private void attack() {
+		
+		navigator.setPlaying(true);
 		
 		// travel to the ball platform and grab ball
 		travelTo(Location.BallPlatform);
