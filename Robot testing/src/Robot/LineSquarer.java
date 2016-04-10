@@ -329,9 +329,13 @@ public class LineSquarer
 		leftMotor.setSpeed(low);
 		rightMotor.setSpeed(low);
 		
+		int leftTachoTop = 0;
+		int leftTachoBot = 0;
+		
 		int leftTacho = leftMotor.getTachoCount();
+		
 		int leftReading = getLeftColorData();
-		while(leftReading < 30)
+		while(leftReading < 30)//keep rotating left until you dont see a black line
 		{
 			leftMotor.forward();
 			try {Thread.sleep(50);} 
@@ -339,10 +343,27 @@ public class LineSquarer
 			leftReading = getLeftColorData();
 		}
 		leftMotor.stop();
-		leftTacho = leftMotor.getTachoCount() - leftTacho;
-		leftMotor.rotate(-leftTacho/2);
+		leftTachoTop = leftMotor.getTachoCount();
+		leftTacho = leftMotor.getTachoCount() - leftTacho; //leftTacho now stores tacho from start to top of line
+		leftMotor.rotate(-leftTacho);//rotate back to original position
 		
+		leftReading = getLeftColorData();
+		while(leftReading < 30)
+		{
+			leftMotor.backward();
+			try {Thread.sleep(50);} 
+			catch (InterruptedException e) {e.printStackTrace();}
+			leftReading = getLeftColorData();
+		}
+		leftMotor.stop();
+		leftTachoBot = leftMotor.getTachoCount();
+		
+		leftMotor.rotate((leftTachoTop - leftTachoBot)/2);
+		
+		int rightTachoTop = 0;
+		int rightTachoBot = 0;
 		int rightTacho = rightMotor.getTachoCount();
+		
 		int rightReading = getRightColorData();
 		while(rightReading < 30)
 		{
@@ -352,8 +373,22 @@ public class LineSquarer
 			rightReading = getRightColorData();
 		}
 		rightMotor.stop();
+		rightTachoTop = rightMotor.getTachoCount();
 		rightTacho = rightMotor.getTachoCount() - rightTacho;
-		rightMotor.rotate(-rightTacho/2);
+		rightMotor.rotate(-rightTacho);
+		
+		rightReading = getRightColorData();
+		while(rightReading < 30)
+		{
+			rightMotor.backward();
+			try {Thread.sleep(50);} 
+			catch (InterruptedException e) {e.printStackTrace();}
+			rightReading = getRightColorData();
+		}
+		rightMotor.stop();
+		rightTachoBot = rightMotor.getTachoCount();
+		
+		rightMotor.rotate((rightTachoTop - rightTachoBot)/2);
 		odo.setTheta(0);
 	}
 	
