@@ -82,11 +82,6 @@ public class BallGrab
 		rightMotor = slave.createRegulatedMotor("D", 'L');
 	}
 	
-	public void searchForCorrectBall() //assume that we are at the ball platform location
-	{
-		
-	}
-	
 	public void grabBall()
 	{
 		//V2.0  for BallGrab_V2.0

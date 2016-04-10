@@ -44,10 +44,10 @@ public class BallColorDetector {
 	 * if blue is the color of the ball
 	 */
 	boolean blueColorDetected = false;
-
+	
 	boolean noColor= false;
-
-
+	
+	
 	/**
 	 * 
 	 * @param colorSensor 
@@ -67,64 +67,65 @@ public class BallColorDetector {
 	public void start()
 
 	{
-		while(true){
+		try{
+			while(true){
 
-			getRGBValue();
+				getRGBValue();
 
-			//optional (printing out the normalized values of red, green and blue)
-			System.out.println("redValue: " + redValue);
-			System.out.println("greenValue" + greenValue);
-			System.out.println("blueValue" + blueValue);
+				//optional (printing out the normalized values of red, green and blue)
+				System.out.println("redValue: " + redValue);
+				System.out.println("greenValue" + greenValue);
+				System.out.println("blueValue" + blueValue);
 
-			//in the case that the detected color of the ball is red
-			if (redValue>greenValue && redValue>blueValue)
-			{
-				redCount ++;
-				System.out.println("RED");
-			}
+				//in the case that the detected color of the ball is red
+				if (redValue>greenValue && redValue>blueValue)
+				{
+					redCount ++;
+					System.out.println("RED");
+				}
 
-			// in the case that the detected color of the ball is blue
-			//if (blueValue>redValue && blueValue>greenValue)
-			if ((redValue<=greenValue && greenValue>=blueValue && blueValue>=redValue)) //if not red, then it's blue
-			{
-				blueCount++;
-				System.out.println("Blue");
-			}
-
+				// in the case that the detected color of the ball is blue
+				//if (blueValue>redValue && blueValue>greenValue)
+				if ((redValue<=greenValue && greenValue>=blueValue && blueValue>=redValue)) //if not red, then it's blue
+				{
+					blueCount++;
+					System.out.println("Blue");
+				}
+				
 			//	if(!(blueValue>redValue && blueValue>greenValue)||!(redValue>greenValue && redValue>blueValue))
-			{
-				//		noColor = true;
-				//		System.out.println("No Color");
-				//		break;
-			}
-			//if this code detects the color red 5 times, will report as detected red and get out of the loop
-			if (redCount == 2)
-			{
-				redColorDetected = true;
-				redCount=0;
-				System.out.println("Red for sure");
-				break;
-			}
+				{
+			//		noColor = true;
+			//		System.out.println("No Color");
+			//		break;
+				}
+				//if this code detects the color red 5 times, will report as detected red and get out of the loop
+				if (redCount == 2)
+				{
+					redColorDetected = true;
+					redCount=0;
+					System.out.println("Red for sure");
+					break;
+				}
+				
+				//if this code detects the color blue 5 times, will report as detected blue and get out of the loop
+				if (blueCount ==2)
+				{
+					blueColorDetected = true;
+					blueCount=0;
+					System.out.println("Blue for sure");
+					break;
+				}
 
-			//if this code detects the color blue 5 times, will report as detected blue and get out of the loop
-			if (blueCount ==2)
-			{
-				blueColorDetected = true;
-				blueCount=0;
-				System.out.println("Blue for sure");
-				break;
-			}
-
-			//this code runs every 200ms
-			try {
+				//this code runs every 200ms
 				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 	}
-
+	
 	public int getColor()
 	{
 		if (redColorDetected)
@@ -141,9 +142,9 @@ public class BallColorDetector {
 		}
 		else
 			return 0;
-
+		
 	}
-
+	
 	/**
 	 * fetching the data and breaking it down into its color components
 	 */
@@ -157,6 +158,6 @@ public class BallColorDetector {
 		blueValue = colorData[2];	
 	}
 
-
-
+	
+	
 }

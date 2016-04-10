@@ -44,10 +44,16 @@ public class LineSquarer
 		
 		driveToHorizontalLine();
 		
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		navi.travelTo(-LSDist,0);
 		while(navi.isNavigating())
 		{
-			try {Thread.sleep(100);} 
+			try {Thread.sleep(500);} 
 			catch (InterruptedException e) {e.printStackTrace();}
 		}
 		navi.turnTo(0);

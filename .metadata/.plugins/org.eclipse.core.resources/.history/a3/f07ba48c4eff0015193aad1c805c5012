@@ -62,9 +62,6 @@ public class Player
 	private void defend() {
 		
 		navigator.setPlaying(true);
-		//unfold
-		Defense def = new Defense();
-		def.mode(1);
 	}
 	
 	// code to attack
@@ -90,26 +87,17 @@ public class Player
 			if (role == Role.Attacker) {
 				
 				switch(startingCorner) { 
-					/*case 1: travelTo(Location.X4); travelTo(Location.AttackBase); break;
+					case 1: travelTo(Location.X4); travelTo(Location.AttackBase); break;
 					case 2: travelTo(Location.X3); travelTo(Location.AttackBase); break;
-					case 3: case 4: travelTo(Location.AttackBase);*/
-				case 1: travelTo(Location.AttackBase); break;
-				case 2: travelTo(Location.AttackBase); break;
-				case 3: travelTo(Location.X2);
-						travelTo(Location.AttackBase); break;
-				case 4: travelTo(Location.X1);
-						travelTo(Location.AttackBase); break;
+					case 3: case 4: travelTo(Location.AttackBase);
 				}
 				
 			} else if (role == Role.Defender) {
 				
 				switch(startingCorner) {
-					case 1: travelTo(Location.X4);
-							travelTo(Location.DefenseBase); break;
-					case 2: travelTo(Location.X3);
-							travelTo(Location.DefenseBase); break;
-					case 3: travelTo(Location.DefenseBase); break;
-					case 4: travelTo(Location.DefenseBase); break;
+					case 1: case 2: travelTo(Location.DefenseBase); break;
+					case 3: travelTo(Location.X2); travelTo(Location.DefenseBase); break;
+					case 4: travelTo(Location.X1); travelTo(Location.DefenseBase);
 				}
 				
 			}
@@ -143,15 +131,7 @@ public class Player
 
 			
 		// return from method only after navigation is complete
-		while (navigator.isNavigating())
-		{
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		while (navigator.isNavigating());
 		
 	} 
 
