@@ -207,7 +207,6 @@ public class Main
 	 */
 	private static void parseParameters() //start wificonnection class, establish connection and set variables
 	{
-		
 		WifiConnection conn = null;
 		
 		try {
@@ -225,23 +224,29 @@ public class Main
 				System.out.println("Transmission read");
 				
 				// initialize variables
-				startingCorner = t.get("SC");
-				role = t.get("Role");
+				
+				if(t.get("OTN").equals(TEAM_NUMBER)) 
+				{//attacker
+					role = 0;
+					startingCorner = t.get("OSC");
+				}
+				else
+				{//defender
+					role = 1;
+					startingCorner = t.get("DSC");
+				}
 				goalWidth = t.get("w1")*30;
-				defenderLine = t.get("d1")*30;
+				defenderLine = (11-t.get("d1"))*30;
 				forwardLine = t.get("d2")*30;
 				lowerLeftX = t.get("ll-x")*30;
 				lowerLeftY = t.get("ll-y")*30;
 				upperRightX = t.get("ur-x")*30;
 				upperRightY = t.get("ur-y")*30;
-				ballColour = t.get("BC");
-				
+				ballColour = t.get("BC");	
 			}
-			
 		} else {
 			System.out.println("Transmission failed");
-		}
-				
+		}		
 	}
 	/**
 	 * Method that localizes using ultrasonic and linesquarer techniques. By the end of the method, the robot will be at
