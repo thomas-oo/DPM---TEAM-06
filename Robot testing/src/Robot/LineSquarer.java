@@ -98,12 +98,6 @@ public class LineSquarer
 		}
 		nav.turnTo(0);
 		findMiddleOfLine();
-		nav.travelTo(0, 0);
-		while(nav.isNavigating())
-		{
-			try {Thread.sleep(500);} 
-			catch (InterruptedException e) {e.printStackTrace();}
-		}
 	}
 
 	/**

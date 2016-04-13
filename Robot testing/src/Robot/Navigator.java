@@ -23,7 +23,7 @@ public class Navigator extends Thread
 	/**
 	 * The array that stores the x and y coordinates for the destination (in cm). destDistance[0] will store x, destDistance[1] will store y.
 	 */
-	private double[] destDistance = new double[2];
+	public double[] destDistance = new double[2];
 	/**
 	 * The heading the robot will need to head, if it wants to go straight and arrive at the destination (in radians).
 	 */
@@ -577,8 +577,8 @@ public class Navigator extends Thread
 		 * @ return True if entering forbidden zone, false if not
 		 */
 		private boolean enteringForbiddenZone()
-		{
-			// get values of the odometer
+		{ return false;
+			/*// get values of the odometer
 			double x = odometer.getX();
 			double y = odometer.getY();
 			double theta = odometer.getTheta();
@@ -634,6 +634,6 @@ public class Navigator extends Thread
 				}
 			}
 			// if none of the conditions above were satisfied then the robot is safe
-			return false;
+			return false;*/
 		}
 }

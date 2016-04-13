@@ -11,6 +11,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
@@ -180,13 +181,17 @@ public class Main
 	/**
 	 * Server IP, this server gives us various parameters via wifi.
 	 */
-	private static final String SERVER_IP = "192.168.0.101";//"localhost"; //1. SERVER_IP: the IP address of the computer running the server application
+	private static final String SERVER_IP = "192.168.10.200";//"localhost"; //1. SERVER_IP: the IP address of the computer running the server application
 	/**
 	 * Our project team number
 	 */
 	private static final int TEAM_NUMBER = 6;	// 2. TEAM_NUMBER: your project team number
 
-		
+	
+	private static final Port touchsensorport = LocalEV3.get().getPort("S1");
+	
+	private static final SensorModes sensor = new EV3TouchSensor(touchsensorport);
+	static Defense def = null;
 	public static void main(String[] args) 
 	{
 		odometer = new Odometer();
@@ -195,11 +200,38 @@ public class Main
 		nav = new Navigator();
 		nav.start();
 		
+		def = new Defense();
+		def.mode(1);
+		
 		parseParameters();
 		readyPosition();
 		
 		Player player = new Player();
-		player.startPlaying();		
+		player.startPlaying();
+		
+		/*BallGrab b = new BallGrab();
+		
+		SampleProvider touch= sensor.getMode("Touch");
+		float[] sample = new float[touch.sampleSize()];
+		b.grabBall();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		b.throwBall();
+		
+		while(true)
+		{
+			touch.fetchSample(sample, 0);
+			if (sample[0]==1)
+			{
+				b.throwBall();
+			}
+		}
+		
+		b.slave.disConnect();*/
 	}
 	
 	/**

@@ -65,17 +65,20 @@ public class BallGrab
 	 */
 	final static int acceleration = 6000;
 	
+	RemoteRequestEV3 slave = null;
+	
 	public BallGrab()
 	{
 		//accessing the slave ports
-		String name = "slave";
-		RemoteRequestEV3 slave = null;
-		try {
+		String name = "slaver06";
+/*		try {
 			slave = new RemoteRequestEV3(BrickFinder.find(name)[0].getIPAddress());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+		
+		slave = Main.def.slave;
 		
 		grabMotor = slave.createRegulatedMotor("B", 'M');
 		leftMotor = slave.createRegulatedMotor("A", 'L');
@@ -92,12 +95,15 @@ public class BallGrab
 		//V2.0  for BallGrab_V2.0
 		leftMotor.setSpeed(loweringSpeed);
 		rightMotor.setSpeed(loweringSpeed);
-		leftMotor.rotate(180,true);
-		rightMotor.rotate(180,false);
+		leftMotor.rotate(135,true);
+		rightMotor.rotate(135,false);
 
 		//V1.0  for BallGrab_V1.0
 		grabMotor.setSpeed(speed);
 		grabMotor.rotate(100);
+		
+		leftMotor.rotate(-40, true);
+		rightMotor.rotate(-40);
 	}
 
 	public void throwBall()
